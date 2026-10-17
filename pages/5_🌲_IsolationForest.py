@@ -91,6 +91,81 @@ fig = go.Figure(
 st.plotly_chart(fig, use_container_width=True)
 st.caption("Tmavší modrá = algoritmus hodnotí oblast jako normální, tmavší červená = jako anomální.")
 
+st.divider()
+
+tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba parametrů", "⚠️ Časté chyby"]
+)
+
+with tab_steps:
+    st.markdown(
+        """
+1. Postav **izolační strom (iTree)**: opakovaně vyber náhodnou proměnnou a
+   náhodnou hodnotu řezu mezi jejím min a max, dokud každý bod nekončí sám
+   ve svém listu (nebo se nedosáhne maximální hloubky).
+2. Zopakuj to pro mnoho stromů → **les (forest)** — každý s jinými
+   náhodnými řezy.
+3. Pro každý bod spočítej **průměrnou hloubku** (délku cesty od kořene k
+   listu) napříč všemi stromy.
+4. Odlehlé body leží **daleko od ostatních**, takže je stačí izolovat
+   mnohem méně řezy → mají **kratší** průměrnou hloubku.
+5. Hloubka se převede na skóre anomálie:
+"""
+    )
+    st.latex(r"s(x, n) = 2^{-\,E[h(x)]\,/\,c(n)}")
+    st.markdown(
+        """
+kde `E[h(x)]` je průměrná hloubka bodu x napříč stromy a `c(n)` normalizační
+konstanta (průměrná hloubka v náhodném binárním stromu s n body). Skóre
+blízko **1** = jasná anomálie, blízko **0,5** a méně = normální bod.
+"""
+    )
+
+with tab_pros:
+    st.markdown(
+        """
+| ✅ Výhody | ❌ Nevýhody |
+|---|---|
+| Lineární časová složitost — dobře škáluje na velké datasety | Náhodné řezy nemusí dobře fungovat na velmi vysokodimenzionálních/řídkých datech |
+| Nepočítá žádné vzdálenosti ani hustoty (na rozdíl od LOF) | Výsledek mírně závisí na náhodné inicializaci stromů (`random_state`) |
+| Funguje dobře i bez předchozí znalosti "normálních" dat | Jednotlivé stromy jsou mělké a nepříliš interpretovatelné samy o sobě |
+| Snadno se paralelizuje (každý strom nezávisle) | U velmi malých datasetů kolísá víc (vidět na animaci u nízkého počtu stromů) |
+"""
+    )
+
+with tab_params:
+    st.markdown(
+        """
+**`n_estimators`** (počet stromů) — čím víc, tím stabilnější odhad skóre
+(viz animace výše), ale i vyšší výpočetní náročnost. V praxi často stačí
+100–200 stromů.
+
+**`contamination`** — očekávaný podíl anomálií; určuje práh pro binární
+`predict()` (-1/1). Když podíl neznáš, nech `"auto"` a pracuj se spojitým
+skóre (`score_samples`).
+
+**`max_samples`** — kolik bodů se použije pro stavbu jednoho stromu
+(výchozí `"auto"` = min(256, n)). Menší hodnota = rychlejší trénink, menší
+riziko, že se strom "přizpůsobí" i anomáliím.
+"""
+    )
+
+with tab_pitfalls:
+    st.markdown(
+        """
+- **Příliš málo stromů** — skóre mapa "kmitá" (viz začátek animace výše) a
+  výsledek je nestabilní mezi jednotlivými běhy.
+- **Zapomenutý `random_state`** — výsledky se pak mezi běhy mírně liší, což
+  komplikuje reprodukovatelnost.
+- **Interpretace skóre jako pravděpodobnosti** — skóre anomálie je relativní
+  míra, ne kalibrovaná pravděpodobnost.
+- **Nevhodné pro čistě kategoriální data** bez numerického kódování — řezy
+  předpokládají spojité (nebo ordinální) proměnné.
+"""
+    )
+
+st.divider()
+
 with st.expander("📎 Ukázková implementace (scikit-learn)"):
     st.code(
         """from sklearn.ensemble import IsolationForest

@@ -2,6 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 from sklearn.datasets import make_moons, make_blobs
+from sklearn.neighbors import NearestNeighbors
 
 from utils import play_pause_buttons, frame_slider, PALETTE, NOISE_COLOR
 
@@ -151,6 +152,94 @@ st.caption(
     f"Nalezeno **{n_clusters_found}** shluků. "
     "🔵 velké tečky = jádrové body, menší = hraniční, šedé = šum."
 )
+
+st.divider()
+
+tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba eps (k-distance graf)", "⚠️ Časté chyby"]
+)
+
+with tab_steps:
+    st.markdown(
+        """
+1. Pro **nenavštívený** bod spočítej, kolik dalších bodů leží v jeho okolí
+   o poloměru **eps**.
+2. Pokud je sousedů (včetně bodu samotného) alespoň **min_samples**, je bod
+   **jádrový (core point)** — založí nový shluk (nebo se připojí k existujícímu).
+3. Z jádrového bodu se shluk **šíří** na všechny jeho sousedy (BFS/DFS):
+   - soused, který je sám jádrový, dál šíří shluk,
+   - soused, který jádrový není, se přidá jako **hraniční bod (border point)**
+     a šíření na něm končí.
+4. Bod, který neleží v okolí žádného jádrového bodu, zůstává označený jako
+   **šum (noise)**.
+5. Opakuj, dokud nejsou navštíveny všechny body.
+
+Na rozdíl od K-Means tu **není potřeba předem znát počet shluků** — DBSCAN
+ho odvodí sám z hustoty dat, a navíc umí nativně označit odlehlé body jako šum.
+"""
+    )
+
+with tab_pros:
+    st.markdown(
+        """
+| ✅ Výhody | ❌ Nevýhody |
+|---|---|
+| Nepotřebuje předem znát počet shluků | Potřebuje dvojici parametrů `eps`/`min_samples`, které nejsou vždy intuitivní |
+| Umí najít shluky **libovolného tvaru** (ne jen kulovité) | Selhává, pokud mají shluky výrazně odlišnou hustotu (jedno `eps` nesedí na všechny) |
+| Nativně rozpozná a označí šum/odlehlé body | Ve vysokých dimenzích je pojem "hustoty" méně spolehlivý |
+| Deterministické (žádná náhodná inicializace) | Může být pomalejší na velmi velkých datasetech (řeší se indexy jako KD-tree) |
+"""
+    )
+
+with tab_params:
+    st.markdown(
+        """
+**Jak odhadnout `eps`?** Běžná heuristika je **k-distance graf**: pro každý
+bod se spočítá vzdálenost k jeho `min_samples`-tému nejbližšímu sousedovi,
+hodnoty se seřadí sestupně a vykreslí. Hledá se opět "loket" — bod, kde
+křivka náhle prudce vzroste. Hodnota na ose y v tomto bodě je rozumný odhad `eps`.
+"""
+    )
+    k_for_dist = min_samples
+    nbrs = NearestNeighbors(n_neighbors=k_for_dist).fit(X)
+    dists, _ = nbrs.kneighbors(X)
+    k_dist = np.sort(dists[:, -1])[::-1]
+
+    kdist_fig = go.Figure()
+    kdist_fig.add_trace(go.Scatter(
+        y=k_dist, mode="lines", line=dict(color=PALETTE[0], width=3), name="k-distance",
+    ))
+    kdist_fig.add_hline(y=eps, line=dict(color=PALETTE[1], width=2, dash="dash"),
+                         annotation_text=f"zvolené eps={eps}", annotation_position="right")
+    kdist_fig.update_layout(
+        height=380, template="plotly_white", showlegend=False,
+        margin=dict(t=30, b=10, l=10, r=10),
+        xaxis=dict(title="Body seřazené sestupně podle vzdálenosti"),
+        yaxis=dict(title=f"Vzdálenost k {k_for_dist}. nejbližšímu sousedovi"),
+    )
+    st.plotly_chart(kdist_fig, use_container_width=True)
+    st.caption(
+        "**min_samples** je obvykle jednodušší zvolit — základní pravidlo je "
+        "alespoň *počet dimenzí + 1*, v praxi se často bere 2× počet dimenzí "
+        "nebo víc u zašuměných dat."
+    )
+
+with tab_pitfalls:
+    st.markdown(
+        """
+- **Jedno `eps` na shluky různé hustoty** — pokud má jeden shluk body hustě
+  u sebe a druhý řídce, žádné jedno `eps` nebude sedět oběma (existuje
+  varianta HDBSCAN, která to řeší).
+- **Neškálovaná data** — `eps` je vzdálenost, takže proměnné s různou škálou
+  zkreslí, co znamená "blízko".
+- **Příliš malé `min_samples`** — téměř všechny body se stanou jádrovými a
+  šum se prakticky přestane detekovat.
+- **Očekávání, že DBSCAN najde přesně *N* shluků** — na rozdíl od K-Means si
+  počet shluků neřídíš přímo, jen nepřímo přes `eps`/`min_samples`.
+"""
+    )
+
+st.divider()
 
 with st.expander("📎 Ukázková implementace (scikit-learn)"):
     st.code(

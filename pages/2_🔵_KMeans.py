@@ -3,6 +3,8 @@ import plotly.graph_objects as go
 import streamlit as st
 from sklearn.datasets import make_blobs
 
+from sklearn.cluster import KMeans as SKKMeans
+
 from utils import play_pause_buttons, frame_slider, PALETTE, run_kmeans_steps
 
 st.set_page_config(page_title="K-Means", page_icon="🔵", layout="wide")
@@ -67,6 +69,96 @@ fig = go.Figure(
 st.plotly_chart(fig, use_container_width=True)
 
 st.caption(f"Algoritmus konvergoval po **{len(steps)}** iteraci/ích (limit: {max_iter}).")
+
+st.divider()
+
+tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba K (elbow metoda)", "⚠️ Časté chyby"]
+)
+
+with tab_steps:
+    st.markdown(
+        """
+1. **Zvol K** a inicializuj K centroidů (náhodně, nebo chytřeji pomocí
+   `k-means++`, které inicializační body rozprostře dál od sebe).
+2. **Přiřazení** — každý bod se přiřadí k nejbližšímu centroidu (podle
+   eukleidovské vzdálenosti).
+3. **Aktualizace** — každý centroid se přepočítá jako průměr bodů, které mu
+   byly právě přiřazeny.
+4. **Opakuj kroky 2–3**, dokud se přiřazení bodů přestane měnit (nebo dokud
+   se nevyčerpá limit iterací).
+
+K-Means ve skutečnosti minimalizuje součet čtverců vzdáleností bodů od jejich
+centroidu — tzv. **inercii (WCSS — within-cluster sum of squares)**:
+"""
+    )
+    st.latex(r"J = \sum_{k=1}^{K} \sum_{x \in C_k} \lVert x - \mu_k \rVert^2")
+    st.markdown(
+        "Protože je úloha nekonvexní, algoritmus může uvíznout v lokálním "
+        "minimu — proto se v praxi spouští vícekrát s různou inicializací "
+        "(`n_init`) a bere se nejlepší výsledek."
+    )
+
+with tab_pros:
+    st.markdown(
+        """
+| ✅ Výhody | ❌ Nevýhody |
+|---|---|
+| Rychlé, škáluje dobře i na velká data | Počet shluků K musí být zadán předem |
+| Jednoduché na pochopení a implementaci | Předpokládá přibližně kulovité, podobně velké shluky — selhává na protáhlých/nepravidelných tvarech |
+| Garantovaně konverguje (inercie v každém kroku klesá) | Citlivé na náhodnou inicializaci — může skončit v lokálním minimu |
+| Funguje dobře jako rychlý první pokus o shlukování | Citlivé na odlehlé hodnoty (průměr je jimi snadno vychýlen) |
+| Snadno škálovatelné na streamovaná/online data (MiniBatchKMeans) | Vyžaduje škálování vstupních proměnných |
+"""
+    )
+
+with tab_params:
+    st.markdown(
+        """
+**Jak zvolit K, když ho neznáš dopředu?** Nejběžnější je **elbow metoda
+("metoda lokte")** — spočítá se inercie pro různá K a hledá se bod, kde se
+křivka "zalomí": po něm přidávání dalších shluků už jen málo snižuje chybu.
+"""
+    )
+    k_range = list(range(1, min(11, n_points)))
+    inertias = [SKKMeans(n_clusters=kk, n_init=5, random_state=seed).fit(X).inertia_ for kk in k_range]
+    elbow_fig = go.Figure()
+    elbow_fig.add_trace(go.Scatter(
+        x=k_range, y=inertias, mode="lines+markers",
+        line=dict(color=PALETTE[0], width=3), marker=dict(size=8),
+        name="Inercie",
+    ))
+    elbow_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"),
+                         annotation_text=f"zvolené K={k}", annotation_position="top")
+    elbow_fig.update_layout(
+        height=380, template="plotly_white", showlegend=False,
+        margin=dict(t=30, b=10, l=10, r=10),
+        xaxis=dict(title="Počet shluků K", dtick=1),
+        yaxis=dict(title="Inercie (WCSS)"),
+    )
+    st.plotly_chart(elbow_fig, use_container_width=True)
+    st.caption(
+        "Hledej místo, kde křivka přestane prudce klesat ('loket'). Pro přesnější "
+        "volbu se často kombinuje se **silhouette skóre**, které navíc penalizuje "
+        "špatně oddělené shluky."
+    )
+
+with tab_pitfalls:
+    st.markdown(
+        """
+- **Zapomenuté škálování proměnných** — bez `StandardScaler` dominuje
+  proměnná s větší číselnou škálou (vzdálenosti jsou jí "protažené").
+- **Jediný běh bez `n_init`** — náhodná inicializace může dát výrazně horší
+  výsledek; v praxi se pouští víc pokusů a bere nejlepší.
+- **Použití na nekulovité nebo různě husté shluky** — K-Means je zde v
+  nevýhodě oproti DBSCAN, který tvar shluku nepředpokládá.
+- **Volba K "od oka"** bez elbow metody nebo silhouette skóre.
+- **Přítomnost výrazných odlehlých hodnot** — ty umí centroid vychýlit;
+  zvážit jejich odstranění (např. pomocí LOF/Isolation Forest) předem.
+"""
+    )
+
+st.divider()
 
 with st.expander("📎 Ukázková implementace (scikit-learn)"):
     st.code(

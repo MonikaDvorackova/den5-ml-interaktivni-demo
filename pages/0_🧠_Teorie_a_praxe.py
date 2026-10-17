@@ -115,6 +115,30 @@ st.caption(
     "algoritmus (K-Means) si strukturu musí najít sám, krok za krokem."
 )
 
+with st.expander("🤔 Jak se vůbec pozná, že model „to udělal dobře“, když nejsou štítky?"):
+    st.markdown(
+        """
+U učení s učitelem je to jednoduché — porovnáš predikci se známou správnou
+odpovědí (přesnost, chyba predikce...). Bez štítků se musí měřit nepřímo:
+
+- **PCA** — kolik procent rozptylu dat zůstalo zachováno (`explained_variance_ratio_`).
+  Čím víc, tím méně informace se promítnutím do menšího prostoru ztratilo.
+- **K-Means** — **inercie** (součet čtverců vzdáleností bodů od jejich
+  centroidu) — nižší je lepší, ale klesá i s rostoucím K, takže se používá
+  spolu s elbow metodou. Dál **silhouette skóre**, které navíc penalizuje
+  shluky, jež jsou si navzájem blízko (špatně oddělené).
+- **DBSCAN** — kvalita se často posuzuje vizuálně nebo přes silhouette
+  skóre (bez bodů označených jako šum), protože počet shluků není parametr.
+- **LOF / Isolation Forest** — pokud existuje aspoň malý vzorek dat se
+  známými anomáliemi, dá se spočítat přesnost/recall na něm; jinak se
+  spoléhá na doménovou expertízu — "dává nalezená anomálie smysl?"
+
+**Shrnutí:** úspěch učení bez učitele se neověřuje jedním univerzálním
+číslem jako u učení s učitelem — vždy záleží na tom, k čemu má nalezená
+struktura sloužit dál.
+"""
+    )
+
 st.divider()
 
 # ----------------------------------------------------------------------
@@ -173,9 +197,57 @@ st.caption(
 st.divider()
 
 # ----------------------------------------------------------------------
-# 3. Využití v praxi
+# 3. Srovnávací tabulka
 # ----------------------------------------------------------------------
-st.header("3️⃣ Kde se to v praxi používá")
+st.header("3️⃣ Porovnání všech pěti algoritmů")
+
+st.markdown(
+    """
+| | 📉 PCA | 🔵 K-Means | 🟢 DBSCAN | 🔍 LOF | 🌲 Isolation Forest |
+|---|---|---|---|---|---|
+| **Úloha** | Redukce dimenzionality | Shlukování | Shlukování | Detekce anomálií | Detekce anomálií |
+| **Výstup** | Body v méně dimenzích | Číslo shluku pro každý bod | Číslo shluku / šum | Skóre odlehlosti | Skóre odlehlosti |
+| **Hlavní hyperparametry** | počet komponent | K (počet shluků) | eps, min_samples | n_neighbors | n_estimators |
+| **Předpoklad o tvaru dat** | lineární struktura | kulovité, podobně velké shluky | libovolný tvar shluků | žádný (lokální hustota) | žádný |
+| **Umí nativně najít šum?** | ne | ne | **ano** | ano (skóre) | ano (skóre) |
+| **Potřebuje škálování dat?** | ano | ano | ano | ano | ne (řezy nejsou citlivé na škálu) |
+| **Deterministické?** | ano | ne (závisí na inicializaci) | ano | ano | ne (náhodné řezy) |
+| **Škálovatelnost na velká data** | vysoká | vysoká | střední | nízká–střední | vysoká |
+"""
+)
+
+st.divider()
+
+# ----------------------------------------------------------------------
+# 4. Jak vybrat správný algoritmus
+# ----------------------------------------------------------------------
+st.header("4️⃣ Jak vybrat ten správný algoritmus?")
+
+st.markdown(
+    """
+- **Chci zredukovat počet proměnných / vizualizovat vysokodimenzionální data**
+  → **PCA**
+- **Chci rozdělit data do skupin a přibližně tuším kolik** → **K-Means**
+  (rychlé, ale shluky musí být zhruba kulovité)
+- **Chci rozdělit data do skupin, ale neznám jejich počet nebo mají
+  nepravidelný tvar** → **DBSCAN** (navíc umí rovnou označit šum)
+- **Chci skóre odlehlosti, které bere v potaz, že různé části dat mají
+  různou hustotu** → **LOF**
+- **Chci rychlou detekci anomálií na velkém datasetu** → **Isolation Forest**
+
+Tyto čtyři otázky často nejsou "buď, nebo" — v praxi se kombinují: např.
+nejdřív **PCA** pro zmenšení počtu proměnných, pak **K-Means nebo DBSCAN**
+pro segmentaci, a **LOF/Isolation Forest** pro průběžné hlídání nových,
+neobvyklých záznamů.
+"""
+)
+
+st.divider()
+
+# ----------------------------------------------------------------------
+# 5. Využití v praxi
+# ----------------------------------------------------------------------
+st.header("5️⃣ Kde se to v praxi používá")
 
 tab1, tab2, tab3 = st.tabs(["📉 Redukce dimenzionality", "🔵🟢 Shlukování", "🔍🌲 Detekce anomálií"])
 
@@ -236,4 +308,26 @@ with tab3:
         st.page_link("pages/5_🌲_IsolationForest.py", label="Otevřít interaktivní Isolation Forest", icon="➡️")
 
 st.divider()
+
+# ----------------------------------------------------------------------
+# 6. Slovníček pojmů
+# ----------------------------------------------------------------------
+with st.expander("📖 Slovníček pojmů"):
+    st.markdown(
+        """
+| Pojem | Vysvětlení |
+|---|---|
+| **Hyperparametr** | Nastavení, které se nenaučí z dat, ale zvolí se předem (např. K u K-Means). |
+| **Rozptyl (variance)** | Míra toho, jak moc se hodnoty liší od průměru — čím víc "kmitají", tím vyšší rozptyl. |
+| **Centroid** | "Těžiště" shluku — průměrná pozice všech bodů, které do něj patří. |
+| **Hustota** | Kolik bodů se nachází v daném okolí / objemu prostoru. |
+| **Jádrový bod (core point)** | Bod, který má ve svém okolí dost sousedů, aby "založil" shluk (DBSCAN). |
+| **Škálování dat** | Převod proměnných na srovnatelnou škálu (např. `StandardScaler`), aby žádná uměle "nedominovala" jen kvůli velkým číslům. |
+| **Inercie (WCSS)** | Součet čtverců vzdáleností bodů od jejich centroidu — čím nižší, tím "těsnější" shluky (K-Means). |
+| **Skóre odlehlosti** | Spojité číslo vyjadřující, jak moc je bod anomální (čím vyšší, tím podezřelejší). |
+| **Kontaminace (contamination)** | Očekávaný podíl anomálií v datech — používá se k nastavení prahu pro binární rozhodnutí. |
+| **Přeučení (overfitting)** | Model se "naučí" i šum v datech místo obecné struktury — hůř pak funguje na nových datech. |
+"""
+    )
+
 st.page_link("app.py", label="⬅️ Zpět na úvod dne", icon="🧭")

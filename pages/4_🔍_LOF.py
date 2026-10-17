@@ -78,6 +78,78 @@ fig = go.Figure(
 
 st.plotly_chart(fig, use_container_width=True)
 
+st.divider()
+
+tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba parametrů", "⚠️ Časté chyby"]
+)
+
+with tab_steps:
+    st.markdown(
+        """
+Pro každý bod **A** se spočítá:
+
+1. **k-distance(A)** — vzdálenost k jeho *k*-tému nejbližšímu sousedovi.
+2. **Reachability distance** vůči každému sousedovi B — "vzdálenost", která
+   se nikdy nepočítá jako menší než k-distance(B):
+"""
+    )
+    st.latex(r"\text{reach-dist}_k(A, B) = \max(\text{k-distance}(B),\ d(A, B))")
+    st.markdown("3. **Lokální hustota (local reachability density)** bodu A:")
+    st.latex(r"\text{lrd}_k(A) = \left( \frac{\sum_{B \in N_k(A)} \text{reach-dist}_k(A,B)}{|N_k(A)|} \right)^{-1}")
+    st.markdown("4. **LOF skóre** — porovná hustotu bodu A s hustotou jeho sousedů:")
+    st.latex(r"\text{LOF}_k(A) = \frac{\sum_{B \in N_k(A)} \text{lrd}_k(B)}{|N_k(A)| \cdot \text{lrd}_k(A)}")
+    st.markdown(
+        """
+**Interpretace:** LOF ≈ 1 znamená, že bod má podobnou hustotu jako sousedi
+(normální bod). LOF výrazně > 1 znamená, že bod je v mnohem řidší oblasti
+než jeho sousedi — tedy pravděpodobná anomálie.
+"""
+    )
+
+with tab_pros:
+    st.markdown(
+        """
+| ✅ Výhody | ❌ Nevýhody |
+|---|---|
+| Vnímá **lokální** kontext — funguje i tam, kde mají různé oblasti různou hustotu | Výpočetně náročnější — pro každý bod se počítají vzdálenosti k sousedům |
+| Dává spojité skóre odlehlosti, ne jen binární ano/ne | Citlivé na volbu `n_neighbors` (vidět v animaci výše) |
+| Nepotřebuje žádný předpoklad o rozdělení dat | Hůř škáluje na velmi vysokodimenzionální data (prokletí dimenzionality u vzdáleností) |
+| Dobře funguje i na menší datasety | Méně vhodné pro streamovaná/online data bez přepočtu celého modelu |
+"""
+    )
+
+with tab_params:
+    st.markdown(
+        """
+**`n_neighbors` (k)** — malé k (3–5) dělá LOF velmi citlivý na lokální šum,
+velké k skóre vyhlazuje a může přehlédnout menší, lokální anomálie. Běžný
+výchozí odhad je k mezi 10 a 30 — animaci výše si zkus přehrát a sleduj, od
+jakého k se výsledek "ustálí".
+
+**`contamination`** — očekávaný podíl anomálií v datech (např. 0.05 = 5 %).
+Určuje práh, od kterého LOF skóre `predict()` označí jako -1 (anomálie).
+Pokud podíl neznáš předem, nech `"auto"` a pracuj rovnou se spojitým skóre
+(`negative_outlier_factor_`) místo s binárním rozhodnutím.
+"""
+    )
+
+with tab_pitfalls:
+    st.markdown(
+        """
+- **Neškálovaná data** — LOF je založené na vzdálenostech, takže proměnné s
+  různou škálou zkreslí, co se počítá za "blízko".
+- **Příliš malé k** — skóre reaguje na každý lokální výkyv, hodně false positives.
+- **Příliš velké k** — menší, ale reálné anomálie "zaniknou" v průměru velkého okolí.
+- **LOF v `novelty=False` módu (výchozí)** neumí predikovat na nových datech —
+  pro to je potřeba `novelty=True` a trénovat jen na "čistých" datech.
+- Ve **vysokých dimenzích** (desítky a víc proměnných) začíná pojem
+  vzdálenosti/hustoty ztrácet význam — zvážit napřed PCA.
+"""
+    )
+
+st.divider()
+
 with st.expander("📎 Ukázková implementace (scikit-learn)"):
     st.code(
         """from sklearn.neighbors import LocalOutlierFactor

@@ -103,6 +103,89 @@ col1.metric("Skutečný úhel PC1", f"{np.rad2deg(pc1_angle) % 180:.1f}°")
 col2.metric("Rozptyl vysvětlený PC1", f"{explained[0]*100:.1f} %")
 col3.metric("Rozptyl vysvětlený PC1+PC2", f"{(explained[0]+explained[1])*100:.1f} %")
 
+st.divider()
+
+tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba parametrů", "⚠️ Časté chyby"]
+)
+
+with tab_steps:
+    st.markdown(
+        """
+PCA ve skutečnosti nic "nezkouší" tak, jak to dělá animace nahoře (ta je
+pedagogická) — pod kapotou se počítá napřímo přes lineární algebru:
+
+1. **Vycentrování dat** — od každého sloupce se odečte jeho průměr, takže
+   data mají průměr 0. PCA hledá směry rozptylu *kolem středu* dat.
+2. **(Volitelně) standardizace** — pokud mají proměnné různé jednotky
+   (např. věk vs. plat), vydělí se navíc směrodatnou odchylkou.
+3. **Výpočet kovarianční matice** dat — popisuje, jak spolu jednotlivé
+   proměnné "kmitají" (kovariují).
+4. **Vlastní čísla a vlastní vektory** kovarianční matice — vlastní vektory
+   udávají *směry* hlavních komponent, vlastní čísla udávají, *kolik
+   rozptylu* daný směr vysvětluje.
+5. **Seřazení komponent** sestupně podle vlastního čísla — PC1 je směr
+   s největším rozptylem, PC2 druhý největší a kolmý na PC1, atd.
+6. **Projekce dat** na prvních *k* komponent → nová reprezentace dat
+   s méně sloupci.
+"""
+    )
+    st.latex(r"\Sigma = \frac{1}{n-1} X^\top X \qquad \text{(X je vycentrovaná matice dat)}")
+    st.latex(r"\Sigma v_i = \lambda_i v_i \qquad \text{(}v_i\text{ = hlavní komponenty, }\lambda_i\text{ = vysvětlený rozptyl)}")
+    st.latex(r"Z = X W_k \qquad \text{(}W_k\text{ = prvních }k\text{ vlastních vektorů)}")
+
+with tab_pros:
+    st.markdown(
+        """
+| ✅ Výhody | ❌ Nevýhody |
+|---|---|
+| Rychlé a deterministické — žádná náhodnost jako u K-Means | Pouze **lineární** transformace — nenajde nelineární strukturu (na to t-SNE, UMAP, kernel PCA) |
+| Odstraňuje redundanci mezi korelovanými proměnnými | Nové komponenty se hůř interpretují (jsou to lineární kombinace původních sloupců) |
+| Zrychluje trénink navazujících modelů | Citlivé na škálu proměnných — bez standardizace dominuje proměnná s největší škálou |
+| Nemá skoro žádné hyperparametry kromě počtu komponent | Citlivé na odlehlé hodnoty (outliers) — ty mohou "natočit" hlavní osu |
+| Funguje jako užitečný krok před shlukováním i detekcí anomálií | Ztrácí se část informace — komprese není bezeztrátová |
+"""
+    )
+
+with tab_params:
+    st.markdown(
+        """
+**Kolik komponent ponechat?**
+
+- **Pravidlo vysvětleného rozptylu** — vybrat tolik komponent, aby jejich
+  součet pokryl zvolený práh (typicky 90–95 % celkového rozptylu).
+- **Scree plot ("loket")** — graf vlastních čísel seřazených sestupně; hledá
+  se bod, kde křivka prudce zpomalí (dál už komponenty přidávají jen málo
+  informace navíc).
+- **Vizualizace** — pokud je cílem jen zobrazit data, volí se pragmaticky
+  2 nebo 3 komponenty, i kdyby nevysvětlovaly 90 % rozptylu.
+
+**Standardizace vstupu** — pokud mají proměnné různé jednotky nebo řádově
+odlišné škály, je potřeba je před PCA standardizovat (`StandardScaler`),
+jinak PCA najde "hlavní směr" podle té proměnné, co má náhodou největší
+číselný rozsah, ne podle skutečné důležitosti.
+"""
+    )
+
+with tab_pitfalls:
+    st.markdown(
+        """
+- **Zapomenutá standardizace** u proměnných s různými jednotkami (roky vs.
+  koruny) — PCA pak bude zkreslené ve prospěch proměnné s větším rozsahem.
+- **Očekávání interpretovatelnosti** — PC1, PC2... nejsou původní sloupce,
+  ale jejich směsi; "co PC1 znamená" se musí zpětně odhadovat podle vah
+  (loadings), ne brát jako hotovou odpověď.
+- **Ignorování odlehlých hodnot** — jeden extrémní bod umí výrazně natočit
+  hlavní osu směrem k sobě.
+- **Použití na kategoriální data bez úpravy** — PCA počítá s číselným
+  (spojitým) prostorem; na čistě kategoriální data se nehodí přímo.
+- **PCA ≠ výběr příznaků (feature selection)** — PCA vytváří *nové* sloupce,
+  nevybírá podmnožinu těch původních.
+"""
+    )
+
+st.divider()
+
 with st.expander("📎 Ukázková implementace (scikit-learn)"):
     st.code(
         """from sklearn.decomposition import PCA
