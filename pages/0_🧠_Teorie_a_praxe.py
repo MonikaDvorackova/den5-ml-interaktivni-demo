@@ -379,4 +379,4 @@ with st.expander("📖 Slovníček pojmů"):
 """
     )
 
-st.page_link("app.py", label="⬅️ Zpět na úvod dne", icon="🧭")
+st.page_link("pages/00_🧭_Domů.py", label="⬅️ Zpět na úvod dne", icon="🧭")

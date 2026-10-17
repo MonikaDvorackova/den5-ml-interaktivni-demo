@@ -12,7 +12,7 @@ h1, h2, h3 { letter-spacing: -0.01em; }
     unsafe_allow_html=True,
 )
 
-home = st.Page("home_view.py", title="Domů", icon="🧭", default=True)
+home = st.Page("pages/00_🧭_Domů.py", title="Domů", icon="🧭", default=True)
 teorie = st.Page("pages/0_🧠_Teorie_a_praxe.py", title="Teorie a praxe", icon="🧠")
 pca = st.Page("pages/1_📉_PCA.py", title="PCA", icon="📉")
 kmeans = st.Page("pages/2_🔵_KMeans.py", title="K-Means", icon="🔵")
