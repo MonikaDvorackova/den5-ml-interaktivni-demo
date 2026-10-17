@@ -110,29 +110,38 @@ tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
 )
 
 with tab_steps:
+    st.markdown("Výpočet hlavních komponent zahrnuje několik kroků:")
     st.markdown(
         """
-PCA ve skutečnosti nic "nezkouší" tak, jak to dělá animace nahoře (ta je
-pedagogická) — pod kapotou se počítá napřímo přes lineární algebru:
-
-1. **Vycentrování dat** — od každého sloupce se odečte jeho průměr, takže
-   data mají průměr 0. PCA hledá směry rozptylu *kolem středu* dat.
-2. **(Volitelně) standardizace** — pokud mají proměnné různé jednotky
-   (např. věk vs. plat), vydělí se navíc směrodatnou odchylkou.
-3. **Výpočet kovarianční matice** dat — popisuje, jak spolu jednotlivé
-   proměnné "kmitají" (kovariují).
-4. **Vlastní čísla a vlastní vektory** kovarianční matice — vlastní vektory
-   udávají *směry* hlavních komponent, vlastní čísla udávají, *kolik
-   rozptylu* daný směr vysvětluje.
-5. **Seřazení komponent** sestupně podle vlastního čísla — PC1 je směr
-   s největším rozptylem, PC2 druhý největší a kolmý na PC1, atd.
-6. **Projekce dat** na prvních *k* komponent → nová reprezentace dat
-   s méně sloupci.
+1. **Určíme, kolik rozměrů má mít výsledná datová sada** — kolik hlavních
+   komponent chceme na konci ponechat.
+2. **Vypočítáme průměr každého původního příznaku a data vycentrujeme**
+   odečtením těchto průměrů — PCA hledá směry rozptylu *kolem středu* dat.
 """
     )
-    st.latex(r"\Sigma = \frac{1}{n-1} X^\top X \qquad \text{(X je vycentrovaná matice dat)}")
-    st.latex(r"\Sigma v_i = \lambda_i v_i \qquad \text{(}v_i\text{ = hlavní komponenty, }\lambda_i\text{ = vysvětlený rozptyl)}")
-    st.latex(r"Z = X W_k \qquad \text{(}W_k\text{ = prvních }k\text{ vlastních vektorů)}")
+    st.latex(r"X_{\text{centr}} = X - \bar{X}")
+    st.markdown("3. **Vypočítáme kovarianční matici** — popisuje, jak spolu jednotlivé příznaky kovariují:")
+    st.latex(r"\Sigma = \frac{1}{n-1} X_{\text{centr}}^\top X_{\text{centr}}")
+    st.markdown("4. **Vypočítáme její vlastní vektory a odpovídající vlastní čísla:**")
+    st.latex(r"\Sigma v_i = \lambda_i v_i")
+    st.markdown(
+        """
+   kde vlastní vektory *v<sub>i</sub>* udávají **směry** hlavních komponent
+   a vlastní čísla *λ<sub>i</sub>* udávají, **kolik rozptylu** daný směr
+   vysvětluje.
+""",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+5. **Vlastní vektory seřadíme sestupně** podle příslušných vlastních čísel
+   a vybereme požadovaný počet vektorů s nejvyššími hodnotami (PC1 = směr
+   s největším rozptylem, PC2 druhý největší a kolmý na PC1, atd.).
+6. **Pomocí matice sestavené z vybraných vektorů transformujeme vycentrovaná
+   vstupní data** do prostoru s menším počtem rozměrů:
+"""
+    )
+    st.latex(r"Z = X_{\text{centr}} \, W_k \qquad \text{(}W_k\text{ = matice prvních }k\text{ vybraných vlastních vektorů)}")
 
 with tab_pros:
     st.markdown(
