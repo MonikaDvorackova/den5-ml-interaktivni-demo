@@ -175,14 +175,36 @@ st.info(
     "jak se jeden centroid snaží 'pokrýt' dva různé shluky najednou."
 )
 
-with st.container(border=True):
-    st.markdown("#### 🏢 Kde se K-Means používá v praxi")
-    st.markdown(
-        """
+col_why, col_where = st.columns(2)
+with col_why:
+    with st.container(border=True):
+        st.markdown("#### 🤔 Proč bych zvolila právě K-Means?")
+        st.markdown(
+            """
+**Sáhni po K-Means, když:**
+- máš alespoň přibližnou představu, kolik skupin v datech je (nebo ji lze
+  odhadnout elbow metodou)
+- shluky jsou přibližně **kulovité a podobně velké**
+- potřebuješ **rychlé a škálovatelné** řešení i na velký dataset
+- chceš snadno vysvětlitelný výsledek — každý bod patří do přesně jedné skupiny
+
+**Nesahej po K-Means, když:**
+- shluky mají **nepravidelný tvar** nebo výrazně odlišnou hustotu/velikost
+  (zvaž DBSCAN)
+- neznáš počet skupin a nechceš ho odhadovat
+- v datech jsou výrazné odlehlé hodnoty, které by vychýlily centroidy
+"""
+        )
+
+with col_where:
+    with st.container(border=True):
+        st.markdown("#### 🏢 Kde se K-Means používá v praxi")
+        st.markdown(
+            """
 - **Segmentace zákazníků** v marketingu (RFM analýza, cílení kampaní, věrnostní programy)
 - **Komprese barev v obrázcích** — nahrazení palety tisíců barev jen K barvami
 - **Seskupování dokumentů nebo článků** podle tématu (spolu s TF-IDF/embeddingy)
 - **Plánování poboček a skladů** podle geografické hustoty zákazníků
 - **Předzpracování pro doporučovací systémy** (seskupení podobných uživatelů/produktů)
 """
-    )
+        )

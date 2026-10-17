@@ -211,10 +211,32 @@ st.info(
     "křivka rozptylu posune — maximum (a tedy PC1) se musí posunout spolu s ním."
 )
 
-with st.container(border=True):
-    st.markdown("#### 🏢 Kde se PCA používá v praxi")
-    st.markdown(
-        """
+col_why, col_where = st.columns(2)
+with col_why:
+    with st.container(border=True):
+        st.markdown("#### 🤔 Proč bych zvolila právě PCA?")
+        st.markdown(
+            """
+**Sáhni po PCA, když:**
+- máš hodně (často korelovaných) proměnných a chceš je zjednodušit beze
+  ztráty podstatné informace
+- potřebuješ vysokodimenzionální data **vizualizovat** ve 2D/3D
+- trénink dalšího modelu je pomalý nebo náchylný k přeučení kvůli velkému
+  počtu příznaků
+- chceš odstranit šum a redundanci mezi proměnnými před dalším zpracováním
+
+**Nesahej po PCA, když:**
+- potřebuješ zachovat **interpretovatelnost** původních proměnných
+- struktura dat je výrazně **nelineární** (zvaž t-SNE, UMAP, kernel PCA)
+- proměnné jsou čistě kategoriální
+"""
+        )
+
+with col_where:
+    with st.container(border=True):
+        st.markdown("#### 🏢 Kde se PCA používá v praxi")
+        st.markdown(
+            """
 - **Komprese a vizualizace obrazu** — např. "eigenfaces" při rozpoznávání obličejů
 - **Redukce počtu příznaků** před trénováním modelu, typicky u genomických dat
   s tisíci sloupci (geny), kde jinak hrozí "prokletí dimenzionality"
@@ -222,4 +244,4 @@ with st.container(border=True):
 - **Odšumění dat** — zahozením komponent s nízkým rozptylem (často = šum)
 - **Zrychlení dalších algoritmů** (shlukování, modely) díky menšímu počtu dimenzí
 """
-    )
+        )

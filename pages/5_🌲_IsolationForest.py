@@ -182,10 +182,31 @@ st.info(
     "už téměř nemění?"
 )
 
-with st.container(border=True):
-    st.markdown("#### 🏢 Kde se Isolation Forest používá v praxi")
-    st.markdown(
-        """
+col_why, col_where = st.columns(2)
+with col_why:
+    with st.container(border=True):
+        st.markdown("#### 🤔 Proč bych zvolila právě Isolation Forest?")
+        st.markdown(
+            """
+**Sáhni po Isolation Forest, když:**
+- máš **velký dataset** a potřebuješ rychlou, dobře škálovatelnou detekci anomálií
+- nechceš počítat vzdálenosti/hustoty mezi všemi body (na rozdíl od LOF)
+- anomálie jsou typicky "snadno oddělitelné" od zbytku dat pár řezy
+- chceš algoritmus, který funguje slušně i bez předchozí standardizace dat
+
+**Nesahej po Isolation Forest, když:**
+- potřebuješ jemně rozlišovat **lokální** anomálie v nestejnoměrně hustých
+  datech (tam je lepší LOF)
+- potřebuješ plně deterministický, reprodukovatelný výsledek bez `random_state`
+- máš jen hrstku dat — náhodné řezy pak kolísají víc
+"""
+        )
+
+with col_where:
+    with st.container(border=True):
+        st.markdown("#### 🏢 Kde se Isolation Forest používá v praxi")
+        st.markdown(
+            """
 - **Detekce podvodů** v bankovnictví a pojišťovnictví — oblíbený kvůli
   rychlosti i na velkých objemech dat
 - **Monitoring serverů a aplikací** — anomálie v metrikách (CPU, latence, chybovost)

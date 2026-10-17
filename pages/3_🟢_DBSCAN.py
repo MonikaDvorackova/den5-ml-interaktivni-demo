@@ -256,10 +256,30 @@ st.info(
     "jeden půlměsíc na víc menších shluků, a pozoruj, kdy se to stane."
 )
 
-with st.container(border=True):
-    st.markdown("#### 🏢 Kde se DBSCAN používá v praxi")
-    st.markdown(
-        """
+col_why, col_where = st.columns(2)
+with col_why:
+    with st.container(border=True):
+        st.markdown("#### 🤔 Proč bych zvolila právě DBSCAN?")
+        st.markdown(
+            """
+**Sáhni po DBSCAN, když:**
+- **neznáš předem** počet shluků
+- shluky mají **nepravidelný nebo protáhlý tvar** (ne kulovité)
+- chceš, aby algoritmus sám rozpoznal a odfiltroval **šum/odlehlé body**
+- hustota shluků je napříč daty zhruba podobná
+
+**Nesahej po DBSCAN, když:**
+- mají shluky výrazně odlišnou hustotu (jedno `eps` nesedí na všechny)
+- je dataset extrémně velký a potřebuješ co nejrychlejší řešení (zvaž K-Means)
+- jsou data ve vysokých dimenzích, kde pojem "hustoty" ztrácí smysl
+"""
+        )
+
+with col_where:
+    with st.container(border=True):
+        st.markdown("#### 🏢 Kde se DBSCAN používá v praxi")
+        st.markdown(
+            """
 - **Analýza GPS tras a míst** — ride-sharing a doručovací služby hledají
   "hot spoty" nasedání/vysedání bez ohledu na jejich tvar
 - **Detekce dopravních nehod nebo kriminality** v geografických datech
@@ -267,4 +287,4 @@ with st.container(border=True):
 - **Čištění dat** — automatické odhalení šumu/odlehlých bodů před dalším zpracováním
 - **Analýza sociálních sítí** — hledání komunit nepravidelného tvaru
 """
-    )
+        )

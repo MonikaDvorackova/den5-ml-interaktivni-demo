@@ -165,10 +165,33 @@ st.info(
     "vysoké — všimni si, jak citlivě LOF reaguje na malý počet sousedů u řídkých dat."
 )
 
-with st.container(border=True):
-    st.markdown("#### 🏢 Kde se LOF používá v praxi")
-    st.markdown(
-        """
+col_why, col_where = st.columns(2)
+with col_why:
+    with st.container(border=True):
+        st.markdown("#### 🤔 Proč bych zvolila právě LOF?")
+        st.markdown(
+            """
+**Sáhni po LOF, když:**
+- hustota dat se v různých částech prostoru výrazně liší (anomálie jsou
+  *lokální*, ne jen globálně odlehlé)
+- chceš **spojité skóre** odlehlosti, ne jen binární rozhodnutí ano/ne
+- dataset je menší až střední velikosti
+- potřebuješ citlivost na okolí bodu, ne jen na vzdálenost od "středu" dat
+
+**Nesahej po LOF, když:**
+- máš hodně velký dataset — výpočet vzdáleností mezi body je náročný
+  (zvaž Isolation Forest)
+- data mají hodně dimenzí (desítky a víc proměnných)
+- potřebuješ model, který umí rychle vyhodnotit nová příchozí data
+  (zvaž `novelty=True` nebo jiný algoritmus)
+"""
+        )
+
+with col_where:
+    with st.container(border=True):
+        st.markdown("#### 🏢 Kde se LOF používá v praxi")
+        st.markdown(
+            """
 - **Detekce podvodných transakcí** na kreditních kartách
 - **Predictive maintenance** — odhalení poruch průmyslových strojů a IoT senzorů
 - **Bezpečnost sítí** — neobvyklé chování uživatele nebo zařízení (intrusion detection)
@@ -176,4 +199,4 @@ with st.container(border=True):
 - Hodí se hlavně tam, kde je hustota dat **v různých oblastech různá** —
   na rozdíl od globálních metod si LOF všímá *lokálního* kontextu bodu
 """
-    )
+        )
