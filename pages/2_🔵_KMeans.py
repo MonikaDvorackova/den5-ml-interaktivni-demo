@@ -1,9 +1,11 @@
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 from sklearn.datasets import make_blobs
 
 from sklearn.cluster import KMeans as SKKMeans
+from sklearn.metrics import silhouette_score
 
 from utils import play_pause_buttons, frame_slider, PALETTE, run_kmeans_steps
 
@@ -11,9 +13,15 @@ st.title("🔵 Shlukování — K-Means")
 
 st.markdown(
     """
-**Princip:** K-Means (Lloydův algoritmus) střídá dva kroky — (1) každý bod
-přiřadí k nejbližšímu centroidu a (2) centroid přepočítá jako průměr bodů,
-které mu patří. Opakuje se, dokud se přiřazení už nemění.
+Existuje řada algoritmů využívajících různé způsoby posuzování podobnosti
+mezi datovými body. Jedním z nejpopulárnějších je **K-Means**, česky také
+**metoda k-průměrů**.
+
+Cílem této metody je rozdělit datovou sadu do **K shluků**. Hodnotu K, tedy
+požadovaný počet shluků, určujeme **před spuštěním** algoritmu. Algoritmus
+v jednotlivých iteracích usiluje o **minimalizaci součtu čtverců
+eukleidovských vzdáleností** mezi body a centroidy jejich shluků. **Centroid**
+je střed shluku vypočítaný jako průměr souřadnic všech bodů, které do něj patří.
 """
 )
 
@@ -71,24 +79,26 @@ st.caption(f"Algoritmus konvergoval po **{len(steps)}** iteraci/ích (limit: {ma
 
 st.divider()
 
-tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
-    ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba K (elbow metoda)", "⚠️ Časté chyby"]
+tab_steps, tab_eval, tab_pros, tab_params, tab_pitfalls = st.tabs(
+    ["📝 Krok za krokem", "📊 Hodnocení kvality", "⚖️ Výhody a nevýhody", "🎯 Volba K (elbow metoda)", "⚠️ Časté chyby"]
 )
 
 with tab_steps:
+    st.markdown("**Jak K-Means funguje?** Animace úplně nahoře ukazuje přesně tyto kroky:")
     st.markdown(
         """
-1. **Zvol K** a inicializuj K centroidů (náhodně, nebo chytřeji pomocí
-   `k-means++`, které inicializační body rozprostře dál od sebe).
-2. **Přiřazení** — každý bod se přiřadí k nejbližšímu centroidu (podle
-   eukleidovské vzdálenosti).
-3. **Aktualizace** — každý centroid se přepočítá jako průměr bodů, které mu
-   byly právě přiřazeny.
-4. **Opakuj kroky 2–3**, dokud se přiřazení bodů přestane měnit (nebo dokud
-   se nevyčerpá limit iterací).
+1. **Inicializace** — zvolíme K počátečních centroidů. Jednou z možností je
+   náhodně vybrat K datových bodů.
+2. **Přiřazení bodů ke shlukům** — každý datový bod přiřadíme k nejbližšímu
+   centroidu. Standardní K-Means používá eukleidovskou vzdálenost.
+3. **Aktualizace souřadnic centroidů** — pro každý shluk vypočítáme nový
+   centroid jako průměr souřadnic všech bodů, které do něj byly přiřazeny.
+4. **Opakování** — kroky 2 a 3 se opakují, dokud se přiřazení bodů ke
+   shlukům přestane měnit (nebo dokud se nevyčerpá limit iterací).
 
-K-Means ve skutečnosti minimalizuje součet čtverců vzdáleností bodů od jejich
-centroidu — tzv. **inercii (WCSS — within-cluster sum of squares)**:
+K-Means v každé iteraci minimalizuje součet čtverců eukleidovských
+vzdáleností mezi body a centroidy jejich shluků — tuto veličinu se říká
+**WCSS (Within-Cluster Sum of Squares)**, případně **inercie**:
 """
     )
     st.latex(r"J = \sum_{k=1}^{K} \sum_{x \in C_k} \lVert x - \mu_k \rVert^2")
@@ -96,6 +106,68 @@ centroidu — tzv. **inercii (WCSS — within-cluster sum of squares)**:
         "Protože je úloha nekonvexní, algoritmus může uvíznout v lokálním "
         "minimu — proto se v praxi spouští vícekrát s různou inicializací "
         "(`n_init`) a bere se nejlepší výsledek."
+    )
+
+with tab_eval:
+    st.markdown(
+        """
+Vyhodnocení výsledků algoritmu K-Means může být do určité míry subjektivní,
+protože obvykle nemáme k dispozici správné cílové třídy (jde přece o učení
+**bez učitele**). Existují ale metriky, které nám mohou pomoci:
+"""
+    )
+    st.markdown(
+        """
+**WCSS (Within-Cluster Sum of Squares)** — součet čtverců vzdáleností
+jednotlivých bodů od centroidů jejich shluků. Vyjadřuje **kompaktnost
+shluků** — nižší hodnota znamená menší vzdálenosti bodů od jejich centroidů.
+S rostoucím počtem shluků ale WCSS přirozeně klesá (v krajním případě K = n
+je WCSS nulová), takže samotná nižší hodnota **nestačí** k výběru
+nejlepšího počtu shluků — proto se používá spolu s elbow metodou (viz
+záložka *Volba K*).
+
+**Silhouette Score** (siluetové skóre) — hodnotí, jak dobře body zapadají
+do vlastního shluku ve srovnání s nejbližším jiným shlukem. Zohledňuje
+vzdálenosti uvnitř shluků i jejich vzájemné oddělení. Nabývá hodnot od
+**−1 do 1**: blízko 1 = bod dobře patří do svého shluku a je dobře oddělený
+od ostatních, blízko 0 = bod leží na hranici dvou shluků, záporné hodnoty =
+bod je pravděpodobně přiřazen do špatného shluku.
+"""
+    )
+    st.latex(r"s(x) = \frac{b(x) - a(x)}{\max(a(x),\, b(x))}")
+    st.caption(
+        "a(x) = průměrná vzdálenost bodu x k ostatním bodům v jeho vlastním shluku · "
+        "b(x) = průměrná vzdálenost bodu x k bodům v nejbližším jiném shluku"
+    )
+
+    eval_k_range = list(range(2, min(11, n_points)))
+    sil_scores = []
+    wcss_scores = []
+    for kk in eval_k_range:
+        model_kk = SKKMeans(n_clusters=kk, n_init=5, random_state=seed).fit(X)
+        wcss_scores.append(model_kk.inertia_)
+        sil_scores.append(silhouette_score(X, model_kk.labels_))
+
+    eval_fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=("WCSS (nižší = kompaktnější)", "Silhouette Score (vyšší = lépe oddělené)"),
+    )
+    eval_fig.add_trace(go.Scatter(x=eval_k_range, y=wcss_scores, mode="lines+markers",
+                                   line=dict(color=PALETTE[0], width=3), marker=dict(size=8),
+                                   showlegend=False), row=1, col=1)
+    eval_fig.add_trace(go.Scatter(x=eval_k_range, y=sil_scores, mode="lines+markers",
+                                   line=dict(color=PALETTE[2], width=3), marker=dict(size=8),
+                                   showlegend=False), row=1, col=2)
+    eval_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"), row=1, col=1)
+    eval_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"), row=1, col=2)
+    eval_fig.update_xaxes(title="K", dtick=1)
+    eval_fig.update_layout(height=380, template="plotly_white", margin=dict(t=40, b=10, l=10, r=10))
+    st.plotly_chart(eval_fig, use_container_width=True)
+    current_sil = sil_scores[eval_k_range.index(k)]
+    st.caption(
+        f"Pro aktuální data: při K={k} je Silhouette Score **{current_sil:.2f}** "
+        "— čím blíž 1, tím lépe oddělené a kompaktní shluky. Zkus v postranním "
+        "panelu měnit K a sleduj, jak se obě křivky mění."
     )
 
 with tab_pros:
@@ -138,8 +210,8 @@ křivka "zalomí": po něm přidávání dalších shluků už jen málo snižuj
     st.plotly_chart(elbow_fig, use_container_width=True)
     st.caption(
         "Hledej místo, kde křivka přestane prudce klesat ('loket'). Pro přesnější "
-        "volbu se často kombinuje se **silhouette skóre**, které navíc penalizuje "
-        "špatně oddělené shluky."
+        "volbu se často kombinuje se **Silhouette Score** — viz záložka "
+        "📊 Hodnocení kvality."
     )
 
 with tab_pitfalls:
