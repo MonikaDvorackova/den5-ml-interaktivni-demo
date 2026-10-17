@@ -2,7 +2,8 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 from plotly.subplots import make_subplots
-from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.datasets import make_blobs, make_moons
 
 from utils import (
     play_pause_buttons, frame_slider, run_kmeans_steps,
@@ -281,6 +282,55 @@ with tab2:
 - **Doporučovací systémy** — seskupení podobných uživatelů nebo produktů
 """
     )
+
+    st.markdown("#### 🆚 K-Means vs. DBSCAN — v čem se liší")
+    st.markdown(
+        """
+| | 🔵 K-Means | 🟢 DBSCAN |
+|---|---|---|
+| **Jak definuje shluk** | okolí centroidu (průměru) | oblast propojených, hustě naskládaných bodů |
+| **Počet shluků** | musí se zadat předem (K) | odvodí se sám z hustoty dat |
+| **Tvar shluků** | předpokládá kulovité, podobně velké | libovolný — i protáhlý, zakřivený |
+| **Odlehlé body / šum** | žádný bod nevynechá — i outlier spadne do nějakého shluku | umí body označit jako šum (`-1`) |
+| **Hlavní parametry** | K | eps, min_samples |
+| **Determinismus** | ne — závisí na náhodné inicializaci centroidů | ano — stejný vstup dá stejný výstup |
+| **Rychlost na velkých datech** | vysoká | střední (klesá s hledáním sousedů) |
+"""
+    )
+
+    rng_cmp = np.random.default_rng(0)
+    Xm, _ = make_moons(n_samples=200, noise=0.07, random_state=0)
+    km_labels = KMeans(n_clusters=2, n_init=10, random_state=0).fit_predict(Xm)
+    db_labels = DBSCAN(eps=0.2, min_samples=5).fit_predict(Xm)
+
+    cmp_fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=("K-Means (K=2) — řeže napříč tvarem", "DBSCAN — respektuje tvar a hustotu"),
+    )
+    km_colors = [PALETTE[c % 3] for c in km_labels]
+    db_colors = [NOISE_COLOR if c == -1 else PALETTE[c % 3] for c in db_labels]
+    cmp_fig.add_trace(go.Scatter(x=Xm[:, 0], y=Xm[:, 1], mode="markers",
+                                  marker=dict(color=km_colors, size=7,
+                                              line=dict(width=0.5, color="white")),
+                                  showlegend=False), row=1, col=1)
+    cmp_fig.add_trace(go.Scatter(x=Xm[:, 0], y=Xm[:, 1], mode="markers",
+                                  marker=dict(color=db_colors, size=7,
+                                              line=dict(width=0.5, color="white")),
+                                  showlegend=False), row=1, col=2)
+    cmp_fig.update_xaxes(scaleanchor="y", scaleratio=1, row=1, col=1)
+    cmp_fig.update_xaxes(scaleanchor="y2", scaleratio=1, row=1, col=2)
+    cmp_fig.update_layout(
+        height=380, template="plotly_white",
+        margin=dict(t=40, b=10, l=10, r=10),
+    )
+    st.plotly_chart(cmp_fig, use_container_width=True)
+    st.caption(
+        "Stejná data ve tvaru dvou půlměsíců: K-Means je neumí rozdělit podle "
+        "skutečného tvaru, protože hledá jen kulovité shluky kolem centroidu — "
+        "rozdělí je napůl podle vzdálenosti. DBSCAN sleduje hustotu bodů podél "
+        "křivky, takže oba půlměsíce rozpozná správně."
+    )
+
     c1, c2 = st.columns(2)
     with c1:
         st.page_link("pages/2_🔵_KMeans.py", label="Otevřít interaktivní K-Means", icon="➡️")
