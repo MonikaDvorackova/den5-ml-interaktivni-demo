@@ -1,12 +1,11 @@
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
-from sklearn.datasets import make_blobs
+from sklearn.datasets import make_blobs, make_moons
 from sklearn.neighbors import LocalOutlierFactor
 
 from utils import play_pause_buttons, frame_slider
 
-st.set_page_config(page_title="Local Outlier Factor", page_icon="🔍", layout="wide")
 st.title("🔍 Detekce anomálií — Local Outlier Factor (LOF)")
 
 st.markdown(
@@ -20,6 +19,7 @@ jak se výsledek mění s rostoucím počtem sousedů **k**.
 
 with st.sidebar:
     st.header("⚙️ Parametry")
+    shape = st.selectbox("Tvar normálních dat", ["Jeden shluk", "Dva shluky různé hustoty", "Měsíčky (moons)"])
     n_points = st.slider("Počet normálních bodů", 40, 250, 120, 10)
     n_outliers = st.slider("Počet vložených odlehlých bodů", 1, 15, 6)
     cluster_std = st.slider("Rozptyl shluku", 0.3, 2.0, 0.7, 0.1)
@@ -27,8 +27,20 @@ with st.sidebar:
     seed = st.slider("Náhodné seed", 0, 100, 5)
 
 rng = np.random.default_rng(seed)
-X_core, _ = make_blobs(n_samples=n_points, centers=1, cluster_std=cluster_std, random_state=seed)
-spread = np.abs(X_core).max() * 2.2
+if shape == "Jeden shluk":
+    X_core, _ = make_blobs(n_samples=n_points, centers=1, cluster_std=cluster_std, random_state=seed)
+elif shape == "Dva shluky různé hustoty":
+    X_core, _ = make_blobs(
+        n_samples=[n_points * 2 // 3, n_points - n_points * 2 // 3],
+        centers=[(-3, 0), (3, 0)],
+        cluster_std=[cluster_std * 0.5, cluster_std * 1.8],
+        random_state=seed,
+    )
+else:
+    X_core, _ = make_moons(n_samples=n_points, noise=0.08, random_state=seed)
+    X_core *= 2.5
+
+spread = np.abs(X_core).max() * 1.6
 outliers = rng.uniform(-spread, spread, size=(n_outliers, 2))
 X = np.vstack([X_core, outliers])
 
@@ -77,6 +89,14 @@ fig = go.Figure(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+if shape == "Dva shluky různé hustoty":
+    st.caption(
+        "💡 Tady je vidět síla LOF: hustý i řídký shluk jsou samy o sobě "
+        "normální, jen mají jinou hustotu. Globální metoda založená na "
+        "vzdálenosti od středu by řídký shluk snadno celý označila za "
+        "anomální — LOF ale porovnává každý bod jen s jeho *vlastním* okolím."
+    )
 
 st.divider()
 

@@ -10,7 +10,6 @@ from utils import (
     PALETTE, NOISE_COLOR, INK_MUTED, GRIDLINE,
 )
 
-st.set_page_config(page_title="Teorie a praxe", page_icon="🧠", layout="wide")
 st.title("🧠 Učení bez učitele: teorie, vizualizace a využití v praxi")
 
 st.markdown(

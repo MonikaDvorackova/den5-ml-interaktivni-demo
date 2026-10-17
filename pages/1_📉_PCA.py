@@ -6,7 +6,6 @@ from sklearn.decomposition import PCA
 
 from utils import play_pause_buttons, frame_slider
 
-st.set_page_config(page_title="PCA", page_icon="📉", layout="wide")
 st.title("📉 Redukce dimenzionality — PCA")
 
 st.markdown(

@@ -7,7 +7,6 @@ from sklearn.cluster import KMeans as SKKMeans
 
 from utils import play_pause_buttons, frame_slider, PALETTE, run_kmeans_steps
 
-st.set_page_config(page_title="K-Means", page_icon="🔵", layout="wide")
 st.title("🔵 Shlukování — K-Means")
 
 st.markdown(

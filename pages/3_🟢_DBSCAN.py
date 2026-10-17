@@ -6,7 +6,6 @@ from sklearn.neighbors import NearestNeighbors
 
 from utils import play_pause_buttons, frame_slider, PALETTE, NOISE_COLOR
 
-st.set_page_config(page_title="DBSCAN", page_icon="🟢", layout="wide")
 st.title("🟢 Shlukování — DBSCAN")
 
 st.markdown(

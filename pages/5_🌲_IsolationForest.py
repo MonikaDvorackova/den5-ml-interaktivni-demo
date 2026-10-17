@@ -4,9 +4,10 @@ import streamlit as st
 from sklearn.datasets import make_blobs
 from sklearn.ensemble import IsolationForest
 
+OUTLIER_MODES = ["Rozptýlené anomálie", "Jedna skupina anomálií (shluk)"]
+
 from utils import play_pause_buttons, frame_slider
 
-st.set_page_config(page_title="Isolation Forest", page_icon="🌲", layout="wide")
 st.title("🌲 Detekce anomálií — Isolation Forest")
 
 st.markdown(
@@ -20,6 +21,7 @@ Animace ukazuje, jak se mapa skóre zpřesňuje s přibývajícím počtem strom
 
 with st.sidebar:
     st.header("⚙️ Parametry")
+    outlier_mode = st.selectbox("Charakter anomálií", OUTLIER_MODES)
     n_points = st.slider("Počet normálních bodů", 40, 250, 120, 10)
     n_outliers = st.slider("Počet vložených odlehlých bodů", 1, 15, 6)
     cluster_std = st.slider("Rozptyl shluku", 0.3, 2.0, 0.7, 0.1)
@@ -30,7 +32,11 @@ with st.sidebar:
 rng = np.random.default_rng(seed)
 X_core, _ = make_blobs(n_samples=n_points, centers=1, cluster_std=cluster_std, random_state=seed)
 spread = np.abs(X_core).max() * 2.0
-outliers = rng.uniform(-spread, spread, size=(n_outliers, 2))
+if outlier_mode == "Rozptýlené anomálie":
+    outliers = rng.uniform(-spread, spread, size=(n_outliers, 2))
+else:
+    corner = rng.choice([-1, 1], size=2) * spread * 0.85
+    outliers = corner + rng.normal(scale=spread * 0.08, size=(n_outliers, 2))
 X = np.vstack([X_core, outliers])
 
 lim_x = [X[:, 0].min() - 0.5, X[:, 0].max() + 0.5]
@@ -90,6 +96,15 @@ fig = go.Figure(
 
 st.plotly_chart(fig, use_container_width=True)
 st.caption("Tmavší modrá = algoritmus hodnotí oblast jako normální, tmavší červená = jako anomální.")
+
+if outlier_mode == "Jedna skupina anomálií (shluk)":
+    st.caption(
+        "💡 Anomálie tentokrát tvoří svoji vlastní malou skupinu (ne náhodně "
+        "rozptýlené body). Všimni si, že čím víc bodů tahle skupina má a čím "
+        "je kompaktnější, tím hůř se dá od normálních dat izolovat — "
+        "v extrému by mohla začít vypadat jako další, jen menší shluk "
+        "(tzv. efekt 'maskování', jeden z limitů Isolation Forestu)."
+    )
 
 st.divider()
 
