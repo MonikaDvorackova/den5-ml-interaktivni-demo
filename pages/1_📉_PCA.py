@@ -118,3 +118,16 @@ st.info(
     "💡 **Cvičení:** Zkus nastavit sklon shluku na 90° a sleduj, jak se zelená "
     "křivka rozptylu posune — maximum (a tedy PC1) se musí posunout spolu s ním."
 )
+
+with st.container(border=True):
+    st.markdown("#### 🏢 Kde se PCA používá v praxi")
+    st.markdown(
+        """
+- **Komprese a vizualizace obrazu** — např. "eigenfaces" při rozpoznávání obličejů
+- **Redukce počtu příznaků** před trénováním modelu, typicky u genomických dat
+  s tisíci sloupci (geny), kde jinak hrozí "prokletí dimenzionality"
+- **Vizualizace vysokodimenzionálních dat** ve 2D/3D (zákaznická data, embeddingy)
+- **Odšumění dat** — zahozením komponent s nízkým rozptylem (často = šum)
+- **Zrychlení dalších algoritmů** (shlukování, modely) díky menšímu počtu dimenzí
+"""
+    )

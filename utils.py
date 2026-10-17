@@ -1,9 +1,15 @@
 import numpy as np
 import plotly.graph_objects as go
 
-PALETTE = ["#4C78A8", "#F58518", "#54A24B", "#E45756", "#72B7B2",
-           "#B279A2", "#FF9DA6", "#9D755D", "#BAB0AC", "#EECA3B"]
-NOISE_COLOR = "#BDBDBD"
+PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100",
+           "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
+NOISE_COLOR = "#898781"
+
+INK_PRIMARY = "#0b0b0b"
+INK_SECONDARY = "#52514e"
+INK_MUTED = "#898781"
+SURFACE = "#fcfcfb"
+GRIDLINE = "#e1e0d9"
 
 
 def play_pause_buttons(duration=500):
@@ -34,6 +40,27 @@ def frame_slider(frame_names, prefix="Krok: "):
                                          "mode": "immediate"}])
                for name in frame_names],
     )]
+
+
+def run_kmeans_steps(X, k, max_iter, seed):
+    rng = np.random.default_rng(seed)
+    idx = rng.choice(len(X), k, replace=False)
+    centroids = X[idx].copy()
+    steps = []
+    for _ in range(max_iter):
+        dists = np.linalg.norm(X[:, None, :] - centroids[None, :, :], axis=2)
+        labels = dists.argmin(axis=1)
+        steps.append((labels.copy(), centroids.copy()))
+        new_centroids = np.array([
+            X[labels == j].mean(axis=0) if np.any(labels == j) else centroids[j]
+            for j in range(k)
+        ])
+        if np.allclose(new_centroids, centroids):
+            centroids = new_centroids
+            steps.append((labels.copy(), centroids.copy()))
+            break
+        centroids = new_centroids
+    return steps
 
 
 def base_layout(title, x_range=None, y_range=None, height=560, extra=None):

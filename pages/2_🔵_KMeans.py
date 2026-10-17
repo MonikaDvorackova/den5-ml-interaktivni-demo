@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from sklearn.datasets import make_blobs
 
-from utils import play_pause_buttons, frame_slider, PALETTE
+from utils import play_pause_buttons, frame_slider, PALETTE, run_kmeans_steps
 
 st.set_page_config(page_title="K-Means", page_icon="🔵", layout="wide")
 st.title("🔵 Shlukování — K-Means")
@@ -24,27 +24,6 @@ with st.sidebar:
     cluster_std = st.slider("Rozptyl shluků", 0.3, 3.0, 1.1, 0.1)
     seed = st.slider("Náhodné seed", 0, 100, 3)
     max_iter = st.slider("Max. počet iterací", 3, 20, 10)
-
-
-def run_kmeans_steps(X, k, max_iter, seed):
-    rng = np.random.default_rng(seed)
-    idx = rng.choice(len(X), k, replace=False)
-    centroids = X[idx].copy()
-    steps = []
-    for _ in range(max_iter):
-        dists = np.linalg.norm(X[:, None, :] - centroids[None, :, :], axis=2)
-        labels = dists.argmin(axis=1)
-        steps.append((labels.copy(), centroids.copy()))
-        new_centroids = np.array([
-            X[labels == j].mean(axis=0) if np.any(labels == j) else centroids[j]
-            for j in range(k)
-        ])
-        if np.allclose(new_centroids, centroids):
-            centroids = new_centroids
-            steps.append((labels.copy(), centroids.copy()))
-            break
-        centroids = new_centroids
-    return steps
 
 
 X, _ = make_blobs(n_samples=n_points, centers=true_clusters, cluster_std=cluster_std,
@@ -103,3 +82,15 @@ st.info(
     "💡 **Cvičení:** Nastav K menší než skutečný počet shluků v datech a pozoruj, "
     "jak se jeden centroid snaží 'pokrýt' dva různé shluky najednou."
 )
+
+with st.container(border=True):
+    st.markdown("#### 🏢 Kde se K-Means používá v praxi")
+    st.markdown(
+        """
+- **Segmentace zákazníků** v marketingu (RFM analýza, cílení kampaní, věrnostní programy)
+- **Komprese barev v obrázcích** — nahrazení palety tisíců barev jen K barvami
+- **Seskupování dokumentů nebo článků** podle tématu (spolu s TF-IDF/embeddingy)
+- **Plánování poboček a skladů** podle geografické hustoty zákazníků
+- **Předzpracování pro doporučovací systémy** (seskupení podobných uživatelů/produktů)
+"""
+    )

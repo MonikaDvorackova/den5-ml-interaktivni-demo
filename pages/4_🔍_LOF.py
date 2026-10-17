@@ -92,3 +92,16 @@ st.info(
     "💡 **Cvičení:** Posuň posuvníkem animace na nízké k (např. 3–5) a pak na "
     "vysoké — všimni si, jak citlivě LOF reaguje na malý počet sousedů u řídkých dat."
 )
+
+with st.container(border=True):
+    st.markdown("#### 🏢 Kde se LOF používá v praxi")
+    st.markdown(
+        """
+- **Detekce podvodných transakcí** na kreditních kartách
+- **Predictive maintenance** — odhalení poruch průmyslových strojů a IoT senzorů
+- **Bezpečnost sítí** — neobvyklé chování uživatele nebo zařízení (intrusion detection)
+- **Kontrola kvality ve výrobě** — odhalení vadných kusů mezi normálními
+- Hodí se hlavně tam, kde je hustota dat **v různých oblastech různá** —
+  na rozdíl od globálních metod si LOF všímá *lokálního* kontextu bodu
+"""
+    )

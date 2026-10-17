@@ -16,19 +16,26 @@ Vyber si téma vlevo v postranním menu, nebo klikni na jednu z dlaždic níže.
 
 st.divider()
 
-st.header("📚 Kam dnešní algoritmy patří")
+with st.container(border=True):
+    st.markdown(
+        """
+### 🧠 Nové: Teorie a praxe
+Co přesně znamená „učení bez učitele“, interaktivní srovnání s učením s
+učitelem, klikací taxonomie všech algoritmů a konkrétní příklady z praxe pro
+každou kategorii.
+"""
+    )
+    st.page_link("pages/0_🧠_Teorie_a_praxe.py", label="Otevřít: Teorie a praxe", icon="➡️")
+
+st.divider()
+
+st.header("📚 Kam dnešní algoritmy patří — ve zkratce")
 
 st.markdown(
-    """
-Všech pět dnešních algoritmů patří do **učení bez učitele (unsupervised
-learning)** — na vstupu máme data **bez štítků** (bez předem známé "správné
-odpovědi") a model v nich sám hledá strukturu. To je rozdíl oproti **učení s
-učitelem (supervised learning)**, kde se model učí ze dvojic vstup → známý
-výstup (klasifikace, regrese) — tím se dnešní den nezabývá.
-
-V rámci učení bez učitele dnešní algoritmy spadají do **tří různých úloh**
-podle toho, *co přesně* se v datech hledá:
-"""
+    "Všech pět algoritmů patří do **učení bez učitele** (data bez štítků) a "
+    "dál se dělí podle toho, *co* se v datech hledá. Podrobné vysvětlení, "
+    "proč každý algoritmus patří tam, kam patří, najdeš na stránce "
+    "**Teorie a praxe** výše."
 )
 
 categories = [
@@ -54,23 +61,6 @@ for col, (icon, cz_name, en_name, goal, algos) in zip(cat_cols, categories):
             st.caption(f"*{en_name}*")
             st.write(goal)
             st.markdown("**Algoritmy:** " + ", ".join(name for name, _ in algos))
-
-with st.expander("🧠 Proč PCA, K-Means, DBSCAN, LOF a Isolation Forest patří tam, kam patří"):
-    st.markdown(
-        """
-| Algoritmus | Úloha | Proč |
-|---|---|---|
-| **PCA** | Redukce dimenzionality | Hledá nové osy (hlavní komponenty) tak, aby zachytily co nejvíc rozptylu dat — výstupem je stejná sada bodů v menším počtu dimenzí, ne shluky ani skóre odlehlosti. |
-| **K-Means** | Shlukování | Každému bodu přiřadí jeden z *k* shluků podle vzdálenosti k centroidu — cílem je rozdělení dat do skupin. |
-| **DBSCAN** | Shlukování | Shluky definuje přes hustotu bodů (jádrové/hraniční body), umí navíc rozdělit data i do nepravidelných (ne kulatých) tvarů shluků a sám odhalí šum. |
-| **Local Outlier Factor (LOF)** | Detekce anomálií | Porovnává lokální hustotu bodu s hustotou jeho sousedů — výstupem je skóre odlehlosti pro každý bod, ne přiřazení do skupiny. |
-| **Isolation Forest** | Detekce anomálií | Měří, jak snadno lze bod izolovat náhodnými řezy — odlehlé body se izolují rychleji, což se opět promítne do skóre anomálie, ne do shluku. |
-
-**Shrnutí:** PCA mění *reprezentaci* dat (méně sloupců), shlukovací algoritmy
-(K-Means, DBSCAN) dávají každému bodu *skupinu*, detekce anomálií (LOF,
-Isolation Forest) dává každému bodu *skóre odlehlosti*.
-"""
-    )
 
 st.divider()
 

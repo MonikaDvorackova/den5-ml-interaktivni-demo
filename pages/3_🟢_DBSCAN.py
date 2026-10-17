@@ -166,3 +166,16 @@ st.info(
     "💡 **Cvičení:** Zmenši `eps` tak, aby u tvaru 'měsíčky' DBSCAN rozdělil "
     "jeden půlměsíc na víc menších shluků, a pozoruj, kdy se to stane."
 )
+
+with st.container(border=True):
+    st.markdown("#### 🏢 Kde se DBSCAN používá v praxi")
+    st.markdown(
+        """
+- **Analýza GPS tras a míst** — ride-sharing a doručovací služby hledají
+  "hot spoty" nasedání/vysedání bez ohledu na jejich tvar
+- **Detekce dopravních nehod nebo kriminality** v geografických datech
+- **Astronomie** — shlukování hvězd/galaxií, kde shluky nemají kulatý tvar
+- **Čištění dat** — automatické odhalení šumu/odlehlých bodů před dalším zpracováním
+- **Analýza sociálních sítí** — hledání komunit nepravidelného tvaru
+"""
+    )

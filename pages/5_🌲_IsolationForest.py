@@ -106,3 +106,17 @@ st.info(
     "zpočátku 'kmitá' a postupně se stabilizuje. Od kolika stromů se výsledek "
     "už téměř nemění?"
 )
+
+with st.container(border=True):
+    st.markdown("#### 🏢 Kde se Isolation Forest používá v praxi")
+    st.markdown(
+        """
+- **Detekce podvodů** v bankovnictví a pojišťovnictví — oblíbený kvůli
+  rychlosti i na velkých objemech dat
+- **Monitoring serverů a aplikací** — anomálie v metrikách (CPU, latence, chybovost)
+- **Kybernetická bezpečnost** — detekce síťových útoků a neobvyklého provozu
+- **Kontrola kvality dat** — odstranění odlehlých hodnot před trénováním jiných modelů
+- Na rozdíl od LOF nepotřebuje počítat vzdálenosti mezi všemi body, takže
+  dobře škáluje na velké datové sady
+"""
+    )
