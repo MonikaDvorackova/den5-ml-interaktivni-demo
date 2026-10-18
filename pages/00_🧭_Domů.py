@@ -250,6 +250,26 @@ with st.expander("🧩 **Doplňkové — ML Deployment & MLOps: Od notebooku do 
 
 st.divider()
 
+# ---------------------------------------------------------------------------
+# Doplňkové: Ochrana dat a kódu
+# ---------------------------------------------------------------------------
+with st.expander("🔐 **Doplňkové — Ochrana osobních údajů a chráněného kódu**"):
+    c1, c2 = st.columns([3, 1])
+    with c1:
+        st.markdown(
+            """
+Osobní údaje vs. anonymizace a pseudonymizace, interaktivní ukázka
+anonymizace syntetických dat krok za krokem, co se nesmí nahrávat do AI
+nástrojů, chráněný kód a licence, GDPR principy a checklist před
+tréninkem na reálných datech.
+"""
+        )
+    with c2:
+        st.write("")
+        st.page_link("pages/p1_🔐_Ochrana_Dat_a_Kodu.py", label="Otevřít →", icon="➡️")
+
+st.divider()
+
 with st.expander("🗺️ Struktura kurzu — kompletní obsah"):
     st.markdown(
         """
@@ -273,6 +293,10 @@ slovníček), PCA, K-Means, DBSCAN, Local Outlier Factor, Isolation Forest.
 serializace (joblib), FastAPI serving, Docker a Google Cloud Platform,
 inference demo (lokální/cloud), monitoring a drift, verze a rollback,
 shrnutí a kvíz.
+
+**Doplňkové — Ochrana dat a kódu:** osobní údaje, pseudonymizace a
+anonymizace, interaktivní anonymizační pipeline na syntetických datech,
+chráněný kód a licence, GDPR principy, checklist před tréninkem.
 
 U každé animace můžeš:
 - měnit parametry algoritmu i vstupní data v postranním panelu,
