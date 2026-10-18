@@ -1,0 +1,7 @@
+# Závislosti pro FastAPI inference server a Docker image (Dockerfile.api).
+# Streamlit Cloud tyto závislosti NEPOTŘEBUJE — instaluje jen requirements.txt.
+fastapi>=0.110
+uvicorn>=0.29
+scikit-learn
+joblib
+numpy

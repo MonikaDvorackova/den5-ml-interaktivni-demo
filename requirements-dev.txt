@@ -1,0 +1,4 @@
+# Vývojové/testovací závislosti navíc k requirements.txt a requirements-api.txt.
+# Instaluj lokálně pro spuštění `pytest tests/`.
+pytest
+httpx

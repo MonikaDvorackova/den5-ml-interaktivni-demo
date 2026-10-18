@@ -1,0 +1,30 @@
+# Dockerfile pro FastAPI inference server (mlops/api/main.py).
+#
+# Image = "recept" (tento soubor), container = běžící instance image.
+#
+# Build:
+#   docker build -f Dockerfile.api -t iris-api:v1 .
+# Run lokálně:
+#   docker run --rm -p 8080:8080 iris-api:v1
+#   curl http://localhost:8080/health
+#
+# Poznámka: model se netrénuje v containeru za běhu — artefakty
+# (mlops/artifacts/*.joblib) vznikají předem pomocí `python -m mlops.train`
+# a jsou součástí image (COPY mlops/ ...). Container tedy při startu jen
+# načte hotový model (viz lifespan v mlops/api/main.py).
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
+
+COPY mlops/ ./mlops/
+
+# Cloud Run posílá port v proměnné prostředí PORT; výchozí 8080 odpovídá
+# tomu, co Cloud Run očekává, pokud PORT nenastavíš jinak.
+ENV MODEL_VERSION=v1
+EXPOSE 8080
+
+CMD ["uvicorn", "mlops.api.main:app", "--host", "0.0.0.0", "--port", "8080"]

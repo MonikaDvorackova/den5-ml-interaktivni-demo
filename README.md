@@ -37,3 +37,19 @@ Stránky v `pages/` samy nevolají `st.set_page_config` — tu drží výhradně
 běh aplikace. Soubor domovské stránky musí ležet v `pages/` (ne v kořeni
 projektu) — `st.page_link()` s řetězcovou cestou totiž podporuje jen
 entrypoint (`app.py`) a soubory uvnitř `pages/`.
+
+## Doplňkový modul: ML Deployment & MLOps
+
+Sekce **🧩 Doplňkové: MLOps** (stránky `pages/m0_...py`–`pages/m8_...py`)
+učí celý životní cyklus nasazení ML modelu — trénink, serializaci,
+FastAPI serving, Docker, Google Cloud Platform, monitoring/drift a
+verzování/rollback. Obsahuje i skutečný, testovaný FastAPI server a
+trénovací skript v adresáři `mlops/` — podrobnosti v
+[`mlops/README.md`](mlops/README.md).
+
+```bash
+# Spuštění testů (model + FastAPI API)
+pip install -r requirements-api.txt -r requirements-dev.txt
+python -m mlops.train     # vygeneruje mlops/artifacts/*.joblib
+pytest tests/ -v
+```

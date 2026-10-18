@@ -212,6 +212,44 @@ with st.expander("🔍 **Den 5 — Redukce dimenzionality, shlukování a detekc
 
 st.divider()
 
+# ---------------------------------------------------------------------------
+# Doplňkové: ML Deployment & MLOps
+# ---------------------------------------------------------------------------
+with st.expander("🧩 **Doplňkové — ML Deployment & MLOps: Od notebooku do produkce**"):
+    st.markdown(
+        "Co se s modelem stane *po* tréninku — uložení, API, Docker, cloud, "
+        "monitoring, retrénink a rollback. Samostatný ~30minutový modul."
+    )
+    mlops_pages = [
+        ("🧭", "MLOps: Úvod", "pages/m0_🧭_MLOps_Uvod.py", "Co je deployment a 30minutová cesta modulem."),
+        ("🔄", "Životní cyklus ML modelu", "pages/m1_🔄_ML_Lifecycle.py", "20 fází od zadání po vyřazení modelu."),
+        ("🧪", "Trénink a serializace", "pages/m2_🧪_Trenink_a_Serializace.py", "Iris pipeline: trénink, uložení, znovu-nahrání."),
+        ("🚀", "FastAPI serving", "pages/m3_🚀_FastAPI_Serving.py", "Endpointy /health, /model-info, /predict."),
+    ]
+    cols = st.columns(len(mlops_pages))
+    for col, (icon, name, path, hint) in zip(cols, mlops_pages):
+        with col:
+            with st.container(border=True):
+                st.markdown(f"**{icon} {name}**")
+                st.caption(hint)
+                st.page_link(path, label="Otevřít", icon="➡️")
+    mlops_pages_2 = [
+        ("🐳", "Docker a GCP", "pages/m4_🐳_Docker_a_GCP.py", "Containerizace a nasazení na Cloud Run."),
+        ("🔮", "Inference demo", "pages/m5_🔮_Inference_Demo.py", "Predikce lokálně i přes cloudové API."),
+        ("📊", "Monitoring a drift", "pages/m6_📊_Monitoring_a_Drift.py", "Provoz, data drift, concept drift."),
+        ("🔁", "Verze a rollback", "pages/m7_🔁_Verze_a_Rollback.py", "Registr modelů, simulace nasazení a rollbacku."),
+    ]
+    cols2 = st.columns(len(mlops_pages_2))
+    for col, (icon, name, path, hint) in zip(cols2, mlops_pages_2):
+        with col:
+            with st.container(border=True):
+                st.markdown(f"**{icon} {name}**")
+                st.caption(hint)
+                st.page_link(path, label="Otevřít", icon="➡️")
+    st.page_link("pages/m8_❓_Shrnuti_a_Kviz.py", label="❓ Shrnutí a kvíz", icon="➡️")
+
+st.divider()
+
 with st.expander("🗺️ Struktura kurzu — kompletní obsah"):
     st.markdown(
         """
@@ -230,6 +268,11 @@ BERT a transformery, shrnutí dne, kvíz.
 
 **Den 5 — Učení bez učitele:** teorie a praxe (úvod, taxonomie, srovnání,
 slovníček), PCA, K-Means, DBSCAN, Local Outlier Factor, Isolation Forest.
+
+**Doplňkové — ML Deployment & MLOps:** životní cyklus ML modelu, trénink a
+serializace (joblib), FastAPI serving, Docker a Google Cloud Platform,
+inference demo (lokální/cloud), monitoring a drift, verze a rollback,
+shrnutí a kvíz.
 
 U každé animace můžeš:
 - měnit parametry algoritmu i vstupní data v postranním panelu,

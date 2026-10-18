@@ -50,6 +50,16 @@ d4_bert = st.Page("pages/d4_04_🤖_BERT.py", title="BERT a transformery", icon=
 d4_shrnuti = st.Page("pages/d4_05_📋_Shrnuti_dne_4.py", title="Shrnutí dne 4", icon="📋")
 d4_kviz = st.Page("pages/d4_06_❓_Kviz_den_4.py", title="Kvíz – den 4", icon="❓")
 
+m0 = st.Page("pages/m0_🧭_MLOps_Uvod.py", title="MLOps: Úvod", icon="🧭")
+m1 = st.Page("pages/m1_🔄_ML_Lifecycle.py", title="Životní cyklus ML modelu", icon="🔄")
+m2 = st.Page("pages/m2_🧪_Trenink_a_Serializace.py", title="Trénink a serializace", icon="🧪")
+m3 = st.Page("pages/m3_🚀_FastAPI_Serving.py", title="FastAPI serving", icon="🚀")
+m4 = st.Page("pages/m4_🐳_Docker_a_GCP.py", title="Docker a GCP", icon="🐳")
+m5 = st.Page("pages/m5_🔮_Inference_Demo.py", title="Inference demo", icon="🔮")
+m6 = st.Page("pages/m6_📊_Monitoring_a_Drift.py", title="Monitoring a drift", icon="📊")
+m7 = st.Page("pages/m7_🔁_Verze_a_Rollback.py", title="Verze a rollback", icon="🔁")
+m8 = st.Page("pages/m8_❓_Shrnuti_a_Kviz.py", title="Shrnutí a kvíz", icon="❓")
+
 pg = st.navigation(
     {
         "🧭 Start": [home, teorie],
@@ -60,6 +70,7 @@ pg = st.navigation(
         "📉 Den 5: Redukce dimenzionality": [pca],
         "🔵🟢 Den 5: Shlukování": [kmeans, dbscan],
         "🔍🌲 Den 5: Detekce anomálií": [lof, iforest],
+        "🧩 Doplňkové: MLOps": [m0, m1, m2, m3, m4, m5, m6, m7, m8],
     },
     expanded=True,
 )

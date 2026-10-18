@@ -1,0 +1,72 @@
+{
+  "v1": {
+    "description": "Počáteční verze — výchozí regularizace.",
+    "dataset_version": "iris-sklearn-1.9 (150 vzorků, bez úprav)",
+    "hyperparameters": {
+      "C": 1.0,
+      "max_iter": 200
+    },
+    "metrics": {
+      "accuracy": 0.9333333333333333,
+      "precision_macro": 0.9333333333333332,
+      "recall_macro": 0.9333333333333332,
+      "f1_macro": 0.9333333333333332,
+      "confusion_matrix": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          1,
+          9
+        ]
+      ],
+      "n_train": 120,
+      "n_test": 30
+    },
+    "trained_at_utc": "2026-10-18T10:00:18+00:00",
+    "artifact": "model_v1.joblib"
+  },
+  "v2": {
+    "description": "Silnější regularizace (nižší C) po analýze přeučení na train datech.",
+    "dataset_version": "iris-sklearn-1.9 (150 vzorků, bez úprav)",
+    "hyperparameters": {
+      "C": 0.2,
+      "max_iter": 200
+    },
+    "metrics": {
+      "accuracy": 0.9,
+      "precision_macro": 0.9023569023569024,
+      "recall_macro": 0.9,
+      "f1_macro": 0.899749373433584,
+      "confusion_matrix": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          2
+        ],
+        [
+          0,
+          1,
+          9
+        ]
+      ],
+      "n_train": 120,
+      "n_test": 30
+    },
+    "trained_at_utc": "2026-10-18T10:00:19+00:00",
+    "artifact": "model_v2.joblib"
+  }
+}
