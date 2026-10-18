@@ -1,7 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
-from gensim.models import Word2Vec
 from sklearn.decomposition import PCA
 
 from utils import PALETTE
@@ -18,6 +17,11 @@ v podobném kontextu (např. "pes" a "kočka" — obě se často objeví vedle
 BoW/TF-IDF tak Word2Vec zachycuje aspoň kus významu slova, ne jen jeho
 frekvenci.
 """
+)
+st.caption(
+    "ℹ️ Animace níže trénuje skutečný skip-gram/CBOW model, jen vlastní "
+    "lehkou implementací v NumPy místo knihovny `gensim` (méně závislostí, "
+    "spolehlivější běh). Kód se skutečným `gensim` je v ukázkové implementaci níže."
 )
 
 ANIMALS = ["pes", "kočka", "kůň", "slon", "tygr", "myš"]
@@ -72,22 +76,52 @@ with st.sidebar:
     seed = st.slider("Náhodné seed", 0, 50, 0)
     st.caption(f"Trénovací korpus: {len(corpus)} krátkých vět, {len(ANIMALS+FRUITS+COLORS+SPORTS)} klíčových slov.")
 
-model = Word2Vec(
-    sentences=corpus,
-    vector_size=vector_size,
-    window=window,
-    min_count=1,
-    sg=1 if sg_choice == "Skip-gram" else 0,
-    epochs=epochs,
-    seed=seed,
-    workers=1,
+def train_word2vec(sentences, vector_size, window, skip_gram, epochs, seed, lr=0.15):
+    rng = np.random.default_rng(seed)
+    vocab_words = sorted({w for sent in sentences for w in sent})
+    word_to_idx = {w: i for i, w in enumerate(vocab_words)}
+    V = len(vocab_words)
+
+    pairs = []
+    for sent in sentences:
+        idxs = [word_to_idx[w] for w in sent]
+        for pos, center in enumerate(idxs):
+            ctx = idxs[max(0, pos - window):pos] + idxs[pos + 1:pos + 1 + window]
+            for c in ctx:
+                pairs.append((center, c) if skip_gram else (c, center))
+    pairs = np.array(pairs)
+    inputs, targets = pairs[:, 0], pairs[:, 1]
+    n_pairs = len(pairs)
+
+    W_in = rng.normal(0, 0.1, size=(V, vector_size))
+    W_out = rng.normal(0, 0.1, size=(vector_size, V))
+
+    # Full-batch gradient descent (softmax skip-gram/CBOW) — vectorized so it
+    # stays fast even on a small vocabulary, without needing a C extension.
+    for _ in range(epochs):
+        H = W_in[inputs]
+        scores = H @ W_out
+        scores -= scores.max(axis=1, keepdims=True)
+        probs = np.exp(scores)
+        probs /= probs.sum(axis=1, keepdims=True)
+        probs[np.arange(n_pairs), targets] -= 1
+        grad_out = H.T @ probs / n_pairs
+        grad_in = probs @ W_out.T
+        W_out -= lr * grad_out
+        np.add.at(W_in, inputs, -lr * grad_in / n_pairs)
+
+    return vocab_words, W_in
+
+
+vocab_words, embeddings = train_word2vec(
+    corpus, vector_size, window,
+    skip_gram=(sg_choice == "Skip-gram"),
+    epochs=epochs, seed=seed,
 )
 
-vocab_words = list(model.wv.key_to_index.keys())
-embeddings = np.array([model.wv[w] for w in vocab_words])
-
+normed_embeddings = embeddings / (np.linalg.norm(embeddings, axis=1, keepdims=True) + 1e-9)
 pca = PCA(n_components=2, random_state=0)
-coords = pca.fit_transform(embeddings)
+coords = pca.fit_transform(normed_embeddings)
 
 categories = [CATEGORY_OF.get(w, "ostatní slovo") for w in vocab_words]
 colors = [CATEGORY_COLORS[c] for c in categories]

@@ -1,8 +1,8 @@
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
-import xgboost as xgb
 from sklearn.datasets import make_moons
+from sklearn.ensemble import GradientBoostingClassifier
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
@@ -18,6 +18,11 @@ dlouhodobě jedna z nejúspěšnějších metod na tabulková data. Animace ukaz
 jak se rozhodovací hranice postupně zpřesňuje s rostoucím **počtem boosting
 kol**.
 """
+)
+st.caption(
+    "ℹ️ Animace níže běží na `GradientBoostingClassifier` ze scikit-learn — "
+    "stejný princip gradient boostingu jako XGBoost, ale bez další závislosti "
+    "navíc. Skutečný XGBoost kód najdeš v ukázkové implementaci níže."
 )
 
 with st.sidebar:
@@ -40,9 +45,9 @@ grid = np.c_[xx.ravel(), yy.ravel()]
 frames = []
 accs = []
 for n in round_counts:
-    clf = xgb.XGBClassifier(
+    clf = GradientBoostingClassifier(
         n_estimators=n, max_depth=max_depth, learning_rate=learning_rate,
-        eval_metric="logloss", random_state=seed,
+        random_state=seed,
     )
     clf.fit(X, y)
     Z = clf.predict_proba(grid)[:, 1].reshape(xx.shape)

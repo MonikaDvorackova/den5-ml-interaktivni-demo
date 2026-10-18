@@ -2,5 +2,3 @@ streamlit>=1.37
 numpy
 scikit-learn
 plotly
-xgboost
-gensim
