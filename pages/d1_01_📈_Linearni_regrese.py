@@ -130,31 +130,44 @@ st.latex(
 
 opt_m, opt_b = float(sk_model.coef_[0]), float(sk_model.intercept_)
 
-path = [(0, 0.0, 0.0, float(np.mean(y ** 2)))] + history
+# Plná trajektorie – každá iterace jeden snímek, aby animace plynula
+def mse_at(m_, b_):
+    return float(np.mean((m_ * Xs + b_ - y) ** 2))
+
+
+path = [(0, 0.0, 0.0, mse_at(0.0, 0.0))]
+m_t, b_t = 0.0, 0.0
+for i in range(1, n_iter + 1):
+    err = m_t * Xs + b_t - y
+    m_t -= learning_rate * (2 / n_points) * np.dot(err, Xs)
+    b_t -= learning_rate * (2 / n_points) * err.sum()
+    path.append((i, m_t, b_t, mse_at(m_t, b_t)))
 path_m = np.array([p[1] for p in path])
 path_b = np.array([p[2] for p in path])
+path_z = np.array([p[3] for p in path])
 
-# Mřížka pro vrstevnice MSE – pokrývá start, celou cestu i optimum
+# Mřížka pro povrch MSE – pokrývá start, celou cestu i optimum
 m_lo, m_hi = min(path_m.min(), opt_m), max(path_m.max(), opt_m)
 b_lo, b_hi = min(path_b.min(), opt_b), max(path_b.max(), opt_b)
 m_pad, b_pad = 0.3 * (m_hi - m_lo) + 0.5, 0.3 * (b_hi - b_lo) + 0.5
-grid_m = np.linspace(m_lo - m_pad, m_hi + m_pad, 80)
-grid_b = np.linspace(b_lo - b_pad, b_hi + b_pad, 80)
+grid_m = np.linspace(m_lo - m_pad, m_hi + m_pad, 60)
+grid_b = np.linspace(b_lo - b_pad, b_hi + b_pad, 60)
 GM, GB = np.meshgrid(grid_m, grid_b)
-mse_grid = np.mean(
-    (GM[..., None] * Xs + GB[..., None] - y) ** 2, axis=-1
-)
+mse_grid = np.mean((GM[..., None] * Xs + GB[..., None] - y) ** 2, axis=-1)
+
+# Cesta i "kulička" jsou lehce nad povrchem, aby se neprolínaly s plochou
+lift = 0.02 * (mse_grid.max() - mse_grid.min())
+z_min = mse_at(opt_m, opt_b)
 
 surface_frames = []
 for k, (i, m_i, b_i, mse) in enumerate(path):
     surface_frames.append(go.Frame(
         data=[
-            go.Scatter(x=path_m[:k + 1], y=path_b[:k + 1], mode="lines+markers",
-                       line=dict(color=PALETTE[1], width=2),
-                       marker=dict(size=6, color=PALETTE[1])),
-            go.Scatter(x=[m_i], y=[b_i], mode="markers",
-                       marker=dict(size=14, color=PALETTE[1],
-                                   line=dict(width=2, color="white"))),
+            go.Scatter3d(x=path_m[:k + 1], y=path_b[:k + 1], z=path_z[:k + 1] + lift,
+                         mode="lines", line=dict(color=PALETTE[1], width=7)),
+            go.Scatter3d(x=[m_i], y=[b_i], z=[mse + lift], mode="markers",
+                         marker=dict(size=9, color=PALETTE[1],
+                                     line=dict(width=2, color="white"))),
         ],
         traces=[1, 2],
         name=f"krok {i} (MSE={mse:.2f})",
@@ -162,26 +175,31 @@ for k, (i, m_i, b_i, mse) in enumerate(path):
 
 surface_fig = go.Figure(
     data=[
-        go.Contour(x=grid_m, y=grid_b, z=mse_grid, colorscale="Blues_r",
-                   ncontours=25, showscale=True,
-                   colorbar=dict(title="MSE"), name="MSE"),
+        go.Surface(x=grid_m, y=grid_b, z=mse_grid, colorscale="Blues_r",
+                   opacity=0.85, showscale=False,
+                   contours=dict(z=dict(show=True, usecolormap=True,
+                                        highlightcolor="white", project_z=True))),
         surface_frames[0].data[0],
         surface_frames[0].data[1],
-        go.Scatter(x=[opt_m], y=[opt_b], mode="markers",
-                   marker=dict(symbol="star", size=16, color=PALETTE[2],
-                               line=dict(width=1, color="white")),
-                   name="Optimum (nejmenší čtverce)"),
+        go.Scatter3d(x=[opt_m], y=[opt_b], z=[z_min + lift], mode="markers",
+                     marker=dict(symbol="diamond", size=8, color=PALETTE[2],
+                                 line=dict(width=1, color="white")),
+                     name="Optimum"),
     ],
     frames=surface_frames,
     layout=go.Layout(
-        title="Cesta gradientního sestupu po povrchu chyby MSE",
-        height=580,
+        title="Gradientní sestup po povrchu chyby MSE (otáčej myší)",
+        height=640,
         template="plotly_white",
         margin=dict(t=90, b=10, l=10, r=10),
-        xaxis=dict(title="m (sklon, standardizované X)", range=[grid_m[0], grid_m[-1]]),
-        yaxis=dict(title="b (posun)", range=[grid_b[0], grid_b[-1]]),
+        scene=dict(
+            xaxis_title="m (sklon)", yaxis_title="b (posun)", zaxis_title="MSE",
+            camera=dict(eye=dict(x=1.6, y=-1.6, z=1.0)),
+            aspectmode="manual", aspectratio=dict(x=1, y=1, z=0.7),
+        ),
+        uirevision="keep-camera",
         showlegend=False,
-        updatemenus=play_pause_buttons(duration=250),
+        updatemenus=play_pause_buttons(duration=60),
         sliders=frame_slider([f.name for f in surface_frames]),
     ),
 )
@@ -189,11 +207,11 @@ surface_fig = go.Figure(
 st.plotly_chart(surface_fig, use_container_width=True)
 
 st.caption(
-    "Vrstevnice spojují body se stejnou chybou MSE, ⭐ je optimum. "
-    "Oranžová cesta ukazuje, jak se (m, b) po jednotlivých krocích blíží k "
-    "minimu — na začátku jsou kroky velké (gradient je strmý), u dna se "
-    "zkracují. Při příliš velkém learning rate (postranní panel) cesta "
-    "z jedné strany údolí na druhou přeskakuje."
+    "Výška plochy je chyba MSE, zelený kosočtverec je optimum. Oranžová "
+    "kulička sestupuje po povrchu a zanechává za sebou cestu — na začátku "
+    "jsou kroky velké (svah je strmý), u dna se zkracují. Graf můžeš myší "
+    "otáčet a přibližovat i během animace. Při příliš velkém learning rate "
+    "(postranní panel) kulička z jedné strany údolí na druhou přeskakuje."
 )
 
 st.divider()
