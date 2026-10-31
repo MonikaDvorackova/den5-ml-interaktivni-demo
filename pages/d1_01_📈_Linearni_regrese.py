@@ -57,10 +57,24 @@ lim_y = [min(y.min(), (history[0][1] * (lim_x[0] - x_mean) / x_std + history[0][
 
 line_x = np.linspace(lim_x[0], lim_x[1], 50)
 
+# Přesné řešení metodou nejmenších čtverců (OLS) – cíl, ke kterému sestup směřuje
+sk_model = LinearRegression().fit(Xs.reshape(-1, 1), y)
+ols_y = sk_model.coef_[0] * ((line_x - x_mean) / x_std) + sk_model.intercept_
+
 frames = []
 for i, m_i, b_i, mse in history:
     line_y = m_i * ((line_x - x_mean) / x_std) + b_i
+    # Rezidua: svislé úsečky od každého bodu k aktuální přímce
+    y_hat = m_i * Xs + b_i
+    res_x = np.column_stack([X, X, np.full_like(X, np.nan)]).ravel()
+    res_y = np.column_stack([y, y_hat, np.full_like(X, np.nan)]).ravel()
     data = [
+        go.Scatter(x=res_x, y=res_y, mode="lines",
+                   line=dict(color="gray", width=1.2, dash="dot"),
+                   name="Rezidua"),
+        go.Scatter(x=line_x, y=ols_y, mode="lines",
+                   line=dict(color=PALETTE[2], width=2, dash="dash"),
+                   name="OLS (přesné řešení)"),
         go.Scatter(x=X, y=y, mode="markers",
                    marker=dict(color=PALETTE[0], size=8, opacity=0.8,
                                line=dict(width=0.5, color="white")),
@@ -90,13 +104,18 @@ fig = go.Figure(
 st.plotly_chart(fig, use_container_width=True)
 
 final_m, final_b, final_mse = history[-1][1], history[-1][2], history[-1][3]
-sk_model = LinearRegression().fit(Xs.reshape(-1, 1), y)
 st.caption(
     f"Po {n_iter} krocích gradientní sestup dosáhl MSE = **{final_mse:.2f}**. "
     f"Přesné řešení metodou nejmenších čtverců (scikit-learn) dává "
     f"MSE = **{np.mean((sk_model.predict(Xs.reshape(-1, 1)) - y) ** 2):.2f}** — "
     "s dostatkem kroků a vhodným learning rate se gradientní sestup k tomuto "
     "optimu přiblíží."
+)
+
+st.caption(
+    "Tečkované svislé úsečky jsou **rezidua** (y − ŷ) — OLS minimalizuje součet "
+    "jejich čtverců. Čárkovaná zelená přímka je přesné řešení OLS, oranžová "
+    "přímka se k ní během animace přibližuje a rezidua se zkracují."
 )
 
 st.divider()
@@ -230,6 +249,16 @@ hodnotami:
     )
     st.latex(r"\hat{y} = m \cdot x + b")
     st.latex(r"\text{MSE} = \frac{1}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)^2")
+    st.markdown(
+        """
+Metoda nejmenších čtverců (OLS) minimalizuje součet čtverců reziduí —
+délek svislých úseček mezi body a přímkou — a má uzavřené řešení:
+"""
+    )
+    st.latex(
+        r"m = \frac{\sum (x_i-\bar x)(y_i-\bar y)}{\sum (x_i-\bar x)^2}"
+        r"\qquad b = \bar y - m\,\bar x"
+    )
     st.markdown(
         """
 Existují dva hlavní způsoby, jak optimální m a b najít:
