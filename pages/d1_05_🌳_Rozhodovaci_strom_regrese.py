@@ -5,7 +5,7 @@ from sklearn.tree import DecisionTreeRegressor
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🌳 Rozhodovací strom v regresi")
+st.title("Rozhodovací strom v regresi")
 
 st.markdown(
     """
@@ -55,7 +55,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Predikce regresního stromu v závislosti na max. hloubce",
         height=580,
-        template="plotly_white",
+        template="ml",
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=[-3.2, 3.2], zeroline=False, title="x"),
         yaxis=dict(zeroline=False, title="y"),

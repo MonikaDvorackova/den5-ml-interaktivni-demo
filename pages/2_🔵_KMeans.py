@@ -9,7 +9,7 @@ from sklearn.metrics import silhouette_score
 
 from utils import play_pause_buttons, frame_slider, PALETTE, run_kmeans_steps
 
-st.title("🔵 Shlukování — K-Means")
+st.title("Shlukování — K-Means")
 
 st.markdown(
     """
@@ -63,7 +63,7 @@ fig = go.Figure(
     layout=go.Layout(
         title=f"Iterace 1 / {len(frames)}",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),
@@ -161,7 +161,7 @@ bod je pravděpodobně přiřazen do špatného shluku.
     eval_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"), row=1, col=1)
     eval_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"), row=1, col=2)
     eval_fig.update_xaxes(title="K", dtick=1)
-    eval_fig.update_layout(height=380, template="plotly_white", margin=dict(t=40, b=10, l=10, r=10))
+    eval_fig.update_layout(height=380, template="ml", margin=dict(t=40, b=10, l=10, r=10))
     st.plotly_chart(eval_fig, use_container_width=True)
     current_sil = sil_scores[eval_k_range.index(k)]
     st.caption(
@@ -202,7 +202,7 @@ křivka "zalomí": po něm přidávání dalších shluků už jen málo snižuj
     elbow_fig.add_vline(x=k, line=dict(color=PALETTE[1], width=2, dash="dash"),
                          annotation_text=f"zvolené K={k}", annotation_position="top")
     elbow_fig.update_layout(
-        height=380, template="plotly_white", showlegend=False,
+        height=380, template="ml", showlegend=False,
         margin=dict(t=30, b=10, l=10, r=10),
         xaxis=dict(title="Počet shluků K", dtick=1),
         yaxis=dict(title="Inercie (WCSS)"),

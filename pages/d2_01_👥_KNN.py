@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("👥 K nejbližších sousedů (KNN)")
+st.title("K nejbližších sousedů (KNN)")
 
 st.markdown(
     """
@@ -73,7 +73,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Rozhodovací hranice KNN v závislosti na počtu sousedů k",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),

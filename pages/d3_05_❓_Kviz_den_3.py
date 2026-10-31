@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("❓ Kvíz – den 3: Pokročilé modely strojového učení")
+st.title("Kvíz – den 3: Pokročilé modely strojového učení")
 
 st.markdown("Over si, co si pamatuješ z tématu baggingu, boostingu a neuronových sítí. Vyber jednu odpověď u každé otázky a klikni na **Vyhodnotit**.")
 

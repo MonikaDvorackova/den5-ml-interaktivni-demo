@@ -6,7 +6,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from utils import play_pause_buttons, frame_slider, PALETTE, NOISE_COLOR
 
-st.title("🟢 Shlukování — DBSCAN")
+st.title("Shlukování — DBSCAN")
 
 st.markdown(
     """
@@ -135,7 +135,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Postup klasifikace bodů (jádro / hranice / šum)",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),
@@ -211,7 +211,7 @@ křivka náhle prudce vzroste. Hodnota na ose y v tomto bodě je rozumný odhad 
     kdist_fig.add_hline(y=eps, line=dict(color=PALETTE[1], width=2, dash="dash"),
                          annotation_text=f"zvolené eps={eps}", annotation_position="right")
     kdist_fig.update_layout(
-        height=380, template="plotly_white", showlegend=False,
+        height=380, template="ml", showlegend=False,
         margin=dict(t=30, b=10, l=10, r=10),
         xaxis=dict(title="Body seřazené sestupně podle vzdálenosti"),
         yaxis=dict(title=f"Vzdálenost k {k_for_dist}. nejbližšímu sousedovi"),

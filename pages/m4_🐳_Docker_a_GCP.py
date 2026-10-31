@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("🐳 Docker a Google Cloud Platform")
+st.title("Docker a Google Cloud Platform")
 
 st.warning(
     "⚠️ Tato stránka je **tutoriál / návod**. Žádný příkaz se odtud "

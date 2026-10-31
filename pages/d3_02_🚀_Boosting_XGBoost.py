@@ -6,7 +6,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🚀 Boosting a XGBoost")
+st.title("Boosting a XGBoost")
 
 st.markdown(
     """
@@ -74,7 +74,7 @@ fig = go.Figure(
     frames=frames,
     layout=go.Layout(
         title="Rozhodovací hranice XGBoost podle počtu boosting kol",
-        height=580, template="plotly_white", showlegend=False,
+        height=580, template="ml", showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),
         yaxis=dict(range=lim_y, zeroline=False),

@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-st.title("🔤 Bag of Words a TF-IDF")
+st.title("Bag of Words a TF-IDF")
 
 st.markdown(
     """
@@ -71,7 +71,7 @@ heatmap = go.Figure(
 )
 heatmap.update_layout(
     height=120 + 40 * len(docs),
-    template="plotly_white",
+    template="ml",
     margin=dict(t=30, b=10, l=10, r=10),
     xaxis=dict(tickangle=-45),
 )

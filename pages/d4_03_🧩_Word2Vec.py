@@ -5,7 +5,7 @@ from sklearn.decomposition import PCA
 
 from utils import PALETTE
 
-st.title("🧩 Word2Vec")
+st.title("Word2Vec")
 
 st.markdown(
     """
@@ -143,7 +143,7 @@ for cat, color in CATEGORY_COLORS.items():
 fig.update_layout(
     title="Naučené vektory slov promítnuté do 2D (přes PCA)",
     height=580,
-    template="plotly_white",
+    template="ml",
     margin=dict(t=60, b=10, l=10, r=10),
     legend=dict(orientation="h", y=-0.1),
 )

@@ -10,7 +10,7 @@ from utils import play_pause_buttons, frame_slider, PALETTE
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-st.title("🧬 Neuronové sítě")
+st.title("Neuronové sítě")
 
 st.markdown(
     """
@@ -82,7 +82,7 @@ fig = go.Figure(
     frames=frames,
     layout=go.Layout(
         title="Rozhodovací hranice neuronové sítě podle počtu epoch tréninku",
-        height=580, template="plotly_white", showlegend=False,
+        height=580, template="ml", showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),
         yaxis=dict(range=lim_y, zeroline=False),
@@ -102,7 +102,7 @@ loss_fig = go.Figure(
                      line=dict(color=PALETTE[3], width=3)),
     layout=go.Layout(
         title="Trénovací ztráta (loss) v průběhu učení",
-        height=300, template="plotly_white",
+        height=300, template="ml",
         margin=dict(t=60, b=10, l=10, r=10),
         xaxis=dict(title="Epocha"), yaxis=dict(title="Loss"),
     ),

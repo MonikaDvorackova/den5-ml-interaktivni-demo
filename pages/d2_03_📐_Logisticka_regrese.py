@@ -6,7 +6,7 @@ from sklearn.linear_model import LogisticRegression
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("📐 Logistická regrese")
+st.title("Logistická regrese")
 
 st.markdown(
     """
@@ -67,7 +67,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Rozhodovací hranice (barva = pravděpodobnost třídy 1) při měnícím se C",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),

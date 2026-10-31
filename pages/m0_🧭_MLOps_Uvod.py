@@ -6,8 +6,8 @@ st.markdown(
     """
 <div style="
     padding: 2rem 2.2rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #273a5e 0%, #2a78d6 55%, #1baf7a 100%);
+    border-radius: 4px;
+    background: #111827;
     color: white;
     margin-bottom: 1.6rem;
 ">

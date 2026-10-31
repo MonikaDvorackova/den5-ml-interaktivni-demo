@@ -10,7 +10,7 @@ from utils import (
     PALETTE, NOISE_COLOR, INK_MUTED, GRIDLINE,
 )
 
-st.title("🧠 Učení bez učitele: teorie, vizualizace a využití v praxi")
+st.title("Učení bez učitele: teorie, vizualizace a využití v praxi")
 
 st.markdown(
     """
@@ -100,7 +100,7 @@ fig.update_xaxes(range=lim_x, scaleanchor="y2", scaleratio=1, row=1, col=2)
 fig.update_yaxes(range=lim_y, row=1, col=2)
 fig.update_layout(
     height=520,
-    template="plotly_white",
+    template="ml",
     showlegend=False,
     margin=dict(t=90, b=10, l=10, r=10),
     updatemenus=play_pause_buttons(duration=500),
@@ -319,7 +319,7 @@ with tab2:
     cmp_fig.update_xaxes(scaleanchor="y", scaleratio=1, row=1, col=1)
     cmp_fig.update_xaxes(scaleanchor="y2", scaleratio=1, row=1, col=2)
     cmp_fig.update_layout(
-        height=380, template="plotly_white",
+        height=380, template="ml",
         margin=dict(t=40, b=10, l=10, r=10),
     )
     st.plotly_chart(cmp_fig, use_container_width=True)

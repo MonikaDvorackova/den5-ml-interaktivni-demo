@@ -5,7 +5,7 @@ import streamlit as st
 
 from mlops.model import FEATURE_NAMES, load_pipeline, predict_one, save_pipeline, train_and_evaluate
 
-st.title("🧪 Trénink a serializace modelu (Iris)")
+st.title("Trénink a serializace modelu (Iris)")
 
 st.markdown(
     """

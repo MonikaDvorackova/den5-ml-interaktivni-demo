@@ -6,7 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🌴 Rozhodovací strom v klasifikaci")
+st.title("Rozhodovací strom v klasifikaci")
 
 st.markdown(
     """
@@ -66,7 +66,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Rozhodovací hranice stromu v závislosti na max_depth",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),

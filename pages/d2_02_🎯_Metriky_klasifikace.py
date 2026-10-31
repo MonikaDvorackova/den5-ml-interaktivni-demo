@@ -7,7 +7,7 @@ from sklearn.metrics import roc_curve, roc_auc_score
 
 from utils import PALETTE
 
-st.title("🎯 Metriky klasifikačních modelů")
+st.title("Metriky klasifikačních modelů")
 
 st.markdown(
     """
@@ -61,7 +61,7 @@ with col_cm:
         )
     )
     cm_fig.update_layout(
-        title="Confusion matrix", height=380, template="plotly_white",
+        title="Confusion matrix", height=380, template="ml",
         margin=dict(t=60, b=10, l=10, r=10), yaxis=dict(autorange="reversed"),
     )
     st.plotly_chart(cm_fig, use_container_width=True)
@@ -92,7 +92,7 @@ roc_fig.add_trace(go.Scatter(
     name=f"aktuální threshold={threshold:.2f}",
 ))
 roc_fig.update_layout(
-    title=f"ROC křivka (AUC = {auc:.3f})", height=420, template="plotly_white",
+    title=f"ROC křivka (AUC = {auc:.3f})", height=420, template="ml",
     margin=dict(t=60, b=10, l=10, r=10),
     xaxis=dict(title="False Positive Rate"), yaxis=dict(title="True Positive Rate"),
     legend=dict(orientation="h", y=-0.2),

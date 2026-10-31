@@ -2,7 +2,7 @@ import re
 
 import streamlit as st
 
-st.title("📝 Práce s textovými daty")
+st.title("Práce s textovými daty")
 
 st.markdown(
     """

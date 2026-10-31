@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🌲 Bagging a Random Forest")
+st.title("Bagging a Random Forest")
 
 st.markdown(
     """
@@ -67,7 +67,7 @@ if task == "Klasifikace":
         frames=frames,
         layout=go.Layout(
             title="Rozhodovací hranice Random Forest podle počtu stromů",
-            height=580, template="plotly_white", showlegend=False,
+            height=580, template="ml", showlegend=False,
             margin=dict(t=90, b=10, l=10, r=10),
             xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),
             yaxis=dict(range=lim_y, zeroline=False),
@@ -107,7 +107,7 @@ else:
         frames=frames,
         layout=go.Layout(
             title="Predikční křivka Random Forest podle počtu stromů",
-            height=580, template="plotly_white",
+            height=580, template="ml",
             margin=dict(t=90, b=10, l=10, r=10),
             xaxis=dict(zeroline=False), yaxis=dict(zeroline=False),
             legend=dict(orientation="h", y=-0.08),

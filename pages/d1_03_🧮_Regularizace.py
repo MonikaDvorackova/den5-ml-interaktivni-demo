@@ -6,7 +6,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🧮 Regularizace v lineární regresi (Ridge a Lasso)")
+st.title("Regularizace v lineární regresi (Ridge a Lasso)")
 
 st.markdown(
     """
@@ -60,7 +60,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Hodnoty koeficientů v závislosti na síle regularizace (alpha)",
         height=560,
-        template="plotly_white",
+        template="ml",
         barmode="group",
         margin=dict(t=90, b=10, l=10, r=10),
         yaxis=dict(range=[-max_abs * 1.15, max_abs * 1.15], title="Hodnota koeficientu", zeroline=True),

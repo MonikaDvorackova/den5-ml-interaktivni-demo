@@ -3,7 +3,7 @@ from pathlib import Path
 
 import streamlit as st
 
-st.title("🔁 Verzování modelu a rollback")
+st.title("Verzování modelu a rollback")
 
 REGISTRY_PATH = Path(__file__).resolve().parent.parent / "mlops" / "artifacts" / "registry.json"
 

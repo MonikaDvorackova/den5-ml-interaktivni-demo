@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("❓ Kvíz – den 4: NLP")
+st.title("Kvíz – den 4: NLP")
 
 st.markdown("Over si, co ti z dnešních témat (předzpracování textu, BoW/TF-IDF, Word2Vec, BERT) zůstalo v hlavě.")
 

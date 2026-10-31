@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("📋 Shrnutí dne 3: Pokročilé modely strojového učení")
+st.title("Shrnutí dne 3: Pokročilé modely strojového učení")
 
 st.markdown(
     """

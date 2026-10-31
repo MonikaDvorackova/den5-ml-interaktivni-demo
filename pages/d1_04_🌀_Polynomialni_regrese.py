@@ -8,7 +8,7 @@ from sklearn.preprocessing import PolynomialFeatures
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("🌀 Polynomiální regrese")
+st.title("Polynomiální regrese")
 
 st.markdown(
     """
@@ -74,7 +74,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Fit polynomiální regrese v závislosti na stupni polynomu",
         height=580,
-        template="plotly_white",
+        template="ml",
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=[-3.3, 3.3], zeroline=False, title="x"),
         yaxis=dict(range=[-4, 4], zeroline=False, title="y"),
@@ -92,7 +92,7 @@ err_fig.add_trace(go.Scatter(x=degrees, y=test_errors, mode="lines+markers",
                               name="Testovací MSE", line=dict(color=PALETTE[2], width=3)))
 err_fig.update_layout(
     title="Trénovací chyba klesá se stupněm pořád — testovací od určitého bodu roste",
-    height=380, template="plotly_white",
+    height=380, template="ml",
     margin=dict(t=50, b=10, l=10, r=10),
     xaxis=dict(title="Stupeň polynomu", dtick=1),
     yaxis=dict(title="MSE"),

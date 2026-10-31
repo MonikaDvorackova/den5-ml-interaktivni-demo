@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 
 from utils import play_pause_buttons, frame_slider
 
-st.title("📉 Redukce dimenzionality — PCA")
+st.title("Redukce dimenzionality — PCA")
 
 st.markdown(
     """
@@ -88,7 +88,7 @@ fig.update_yaxes(range=[0, variances.max() * 1.15], row=1, col=2, title="Rozptyl
 
 fig.update_layout(
     height=560,
-    template="plotly_white",
+    template="ml",
     showlegend=False,
     margin=dict(t=90, b=10, l=10, r=10),
     updatemenus=play_pause_buttons(duration=250),

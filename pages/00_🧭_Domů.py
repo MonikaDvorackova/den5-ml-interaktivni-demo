@@ -4,8 +4,8 @@ st.markdown(
     """
 <div style="
     padding: 2rem 2.2rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2a78d6 0%, #1baf7a 55%, #eb6834 100%);
+    border-radius: 4px;
+    background: #111827;
     color: white;
     margin-bottom: 1.6rem;
 ">
@@ -194,8 +194,8 @@ with st.expander("🔍 **Den 5 — Redukce dimenzionality, shlukování a detekc
                 f"""
 <div style="
     border: 1px solid rgba(11,11,11,0.10);
-    border-left: 5px solid {color};
-    border-radius: 10px;
+    border-left: 3px solid {color};
+    border-radius: 4px;
     padding: 0.7rem 0.9rem;
     margin-bottom: 0.6rem;
 ">

@@ -6,7 +6,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from utils import PALETTE
 
-st.title("📏 Metriky regresních modelů")
+st.title("Metriky regresních modelů")
 
 st.markdown(
     """
@@ -78,7 +78,7 @@ fig.add_trace(go.Scatter(
 ))
 fig.update_layout(
     title="Skutečné vs. predikované hodnoty — vliv odlehlých bodů na fit",
-    height=520, template="plotly_white",
+    height=520, template="ml",
     margin=dict(t=60, b=10, l=10, r=10),
     legend=dict(orientation="h", y=-0.15),
 )
@@ -103,7 +103,7 @@ bar_fig.add_trace(go.Bar(name="S odlehlými hodnotami", x=metric_names,
 bar_fig.add_trace(go.Bar(name="Bez odlehlých hodnot", x=metric_names,
                           y=[metrics_without[m] for m in metric_names], marker_color=PALETTE[2]))
 bar_fig.update_layout(
-    barmode="group", height=380, template="plotly_white",
+    barmode="group", height=380, template="ml",
     title="MSE a RMSE rostou s odlehlými hodnotami rychleji než MAE",
     margin=dict(t=50, b=10, l=10, r=10),
 )

@@ -2,7 +2,7 @@ import streamlit as st
 
 from mlops.content import GROUP_COLORS, GROUP_LABELS, LIFECYCLE_PHASES
 
-st.title("🔄 Životní cyklus ML modelu")
+st.title("Životní cyklus ML modelu")
 
 st.markdown(
     """
@@ -17,7 +17,7 @@ legend_cols = st.columns(len(GROUP_LABELS))
 for col, (group, label) in zip(legend_cols, GROUP_LABELS.items()):
     with col:
         st.markdown(
-            f"""<div style="border-left: 5px solid {GROUP_COLORS[group]};
+            f"""<div style="border-left: 3px solid {GROUP_COLORS[group]};
             padding: 0.3rem 0.6rem; border-radius: 4px; background: rgba(127,127,127,0.08);">
             <b>{label}</b></div>""",
             unsafe_allow_html=True,

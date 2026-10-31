@@ -7,7 +7,7 @@ import streamlit as st
 
 from mlops.model import FEATURE_NAMES, predict_one, train_and_evaluate
 
-st.title("🔮 Inference demo")
+st.title("Inference demo")
 
 st.markdown(
     "Dva režimy stejné úlohy — predikce druhu kosatce Iris. **Lokální** "

@@ -4,7 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
-st.title("🤖 BERT a transformery")
+st.title("BERT a transformery")
 
 st.markdown(
     """
@@ -78,7 +78,7 @@ if len(words) >= 2:
     fig.update_layout(
         title="Ilustrativní attention mapa (toy embeddingy, NE skutečný BERT)",
         height=120 + 45 * len(words),
-        template="plotly_white",
+        template="ml",
         margin=dict(t=60, b=10, l=10, r=10),
         yaxis=dict(autorange="reversed"),
     )

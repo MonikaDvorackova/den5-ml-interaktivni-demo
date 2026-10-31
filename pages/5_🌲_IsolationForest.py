@@ -8,7 +8,7 @@ OUTLIER_MODES = ["Rozptýlené anomálie", "Jedna skupina anomálií (shluk)"]
 
 from utils import play_pause_buttons, frame_slider
 
-st.title("🌲 Detekce anomálií — Isolation Forest")
+st.title("Detekce anomálií — Isolation Forest")
 
 st.markdown(
     """
@@ -84,7 +84,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Mapa anomálie skóre v závislosti na počtu stromů (n_estimators)",
         height=580,
-        template="plotly_white",
+        template="ml",
         showlegend=False,
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False, scaleanchor="y", scaleratio=1),

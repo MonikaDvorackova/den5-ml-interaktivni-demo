@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("🚀 FastAPI serving")
+st.title("FastAPI serving")
 
 st.markdown(
     """

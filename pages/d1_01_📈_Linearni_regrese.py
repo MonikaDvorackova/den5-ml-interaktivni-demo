@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression
 
 from utils import play_pause_buttons, frame_slider, PALETTE
 
-st.title("📈 Lineární regrese")
+st.title("Lineární regrese")
 
 st.markdown(
     """
@@ -77,7 +77,7 @@ fig = go.Figure(
     layout=go.Layout(
         title="Fitování přímky gradientním sestupem",
         height=580,
-        template="plotly_white",
+        template="ml",
         margin=dict(t=90, b=10, l=10, r=10),
         xaxis=dict(range=lim_x, zeroline=False),
         yaxis=dict(range=lim_y, zeroline=False),
@@ -190,7 +190,7 @@ surface_fig = go.Figure(
     layout=go.Layout(
         title="Gradientní sestup po povrchu chyby MSE (otáčej myší)",
         height=640,
-        template="plotly_white",
+        template="ml",
         margin=dict(t=90, b=10, l=10, r=10),
         scene=dict(
             xaxis_title="m (sklon)", yaxis_title="b (posun)", zaxis_title="MSE",

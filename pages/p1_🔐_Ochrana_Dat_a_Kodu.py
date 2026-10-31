@@ -9,7 +9,7 @@ from privacy import (
     strip_direct_identifiers,
 )
 
-st.title("🔐 Ochrana osobních údajů a chráněného kódu")
+st.title("Ochrana osobních údajů a chráněného kódu")
 
 st.markdown(
     """

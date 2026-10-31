@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-st.title("📊 Monitoring a drift")
+st.title("Monitoring a drift")
 
 st.warning(
     "🧪 **Všechna data na této stránce jsou syntetická** — vygenerovaná "

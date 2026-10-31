@@ -1,5 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
+import plotly.io as pio
 
 PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100",
            "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
@@ -10,6 +11,31 @@ INK_SECONDARY = "#52514e"
 INK_MUTED = "#898781"
 SURFACE = "#fcfcfb"
 GRIDLINE = "#e1e0d9"
+
+pio.templates["ml"] = go.layout.Template(
+    layout=go.Layout(
+        font=dict(family="Inter, -apple-system, Segoe UI, sans-serif",
+                  size=13, color=INK_PRIMARY),
+        title=dict(font=dict(size=15, color=INK_PRIMARY), x=0.0, xanchor="left"),
+        paper_bgcolor="white",
+        plot_bgcolor="white",
+        colorway=PALETTE,
+        xaxis=dict(showgrid=True, gridcolor=GRIDLINE, gridwidth=1, zeroline=False,
+                   showline=True, linecolor=INK_MUTED, linewidth=1,
+                   ticks="outside", tickcolor=INK_MUTED, ticklen=4,
+                   tickfont=dict(color=INK_SECONDARY, size=11),
+                   title=dict(font=dict(color=INK_SECONDARY, size=12))),
+        yaxis=dict(showgrid=True, gridcolor=GRIDLINE, gridwidth=1, zeroline=False,
+                   showline=True, linecolor=INK_MUTED, linewidth=1,
+                   ticks="outside", tickcolor=INK_MUTED, ticklen=4,
+                   tickfont=dict(color=INK_SECONDARY, size=11),
+                   title=dict(font=dict(color=INK_SECONDARY, size=12))),
+        legend=dict(font=dict(size=11, color=INK_SECONDARY), bgcolor="rgba(0,0,0,0)"),
+        hoverlabel=dict(bgcolor="white", bordercolor=GRIDLINE,
+                        font=dict(color=INK_PRIMARY, size=12)),
+    )
+)
+pio.templates.default = "ml"
 
 
 def play_pause_buttons(duration=500):
