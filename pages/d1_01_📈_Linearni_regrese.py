@@ -101,6 +101,103 @@ st.caption(
 
 st.divider()
 
+st.subheader("⛰️ Jak funguje gradientní sestup")
+
+st.markdown(
+    """
+Představ si chybu MSE jako **krajinu**: každá dvojice parametrů (**m**, **b**)
+má nějakou výšku — velikost chyby. Hledáme nejnižší místo (údolí). Gradient
+je vektor, který v daném bodě ukazuje směrem **nejstrmějšího stoupání**, takže
+když se vydáme **opačným směrem**, jdeme nejrychleji dolů. Postup je pořád
+stejný:
+
+1. začni v libovolném bodě (zde m = 0, b = 0),
+2. spočítej gradient MSE v aktuálním bodě,
+3. udělej malý krok proti gradientu (velikost kroku určuje **learning rate** α),
+4. opakuj, dokud se chyba přestane zlepšovat.
+"""
+)
+st.latex(
+    r"\frac{\partial \text{MSE}}{\partial m} = \frac{2}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)\,x_i"
+    r"\qquad"
+    r"\frac{\partial \text{MSE}}{\partial b} = \frac{2}{n}\sum_{i=1}^{n} (\hat{y}_i - y_i)"
+)
+st.latex(
+    r"m \leftarrow m - \alpha \,\frac{\partial \text{MSE}}{\partial m}"
+    r"\qquad"
+    r"b \leftarrow b - \alpha \,\frac{\partial \text{MSE}}{\partial b}"
+)
+
+opt_m, opt_b = float(sk_model.coef_[0]), float(sk_model.intercept_)
+
+path = [(0, 0.0, 0.0, float(np.mean(y ** 2)))] + history
+path_m = np.array([p[1] for p in path])
+path_b = np.array([p[2] for p in path])
+
+# Mřížka pro vrstevnice MSE – pokrývá start, celou cestu i optimum
+m_lo, m_hi = min(path_m.min(), opt_m), max(path_m.max(), opt_m)
+b_lo, b_hi = min(path_b.min(), opt_b), max(path_b.max(), opt_b)
+m_pad, b_pad = 0.3 * (m_hi - m_lo) + 0.5, 0.3 * (b_hi - b_lo) + 0.5
+grid_m = np.linspace(m_lo - m_pad, m_hi + m_pad, 80)
+grid_b = np.linspace(b_lo - b_pad, b_hi + b_pad, 80)
+GM, GB = np.meshgrid(grid_m, grid_b)
+mse_grid = np.mean(
+    (GM[..., None] * Xs + GB[..., None] - y) ** 2, axis=-1
+)
+
+surface_frames = []
+for k, (i, m_i, b_i, mse) in enumerate(path):
+    surface_frames.append(go.Frame(
+        data=[
+            go.Scatter(x=path_m[:k + 1], y=path_b[:k + 1], mode="lines+markers",
+                       line=dict(color=PALETTE[1], width=2),
+                       marker=dict(size=6, color=PALETTE[1])),
+            go.Scatter(x=[m_i], y=[b_i], mode="markers",
+                       marker=dict(size=14, color=PALETTE[1],
+                                   line=dict(width=2, color="white"))),
+        ],
+        traces=[1, 2],
+        name=f"krok {i} (MSE={mse:.2f})",
+    ))
+
+surface_fig = go.Figure(
+    data=[
+        go.Contour(x=grid_m, y=grid_b, z=mse_grid, colorscale="Blues_r",
+                   ncontours=25, showscale=True,
+                   colorbar=dict(title="MSE"), name="MSE"),
+        surface_frames[0].data[0],
+        surface_frames[0].data[1],
+        go.Scatter(x=[opt_m], y=[opt_b], mode="markers",
+                   marker=dict(symbol="star", size=16, color=PALETTE[2],
+                               line=dict(width=1, color="white")),
+                   name="Optimum (nejmenší čtverce)"),
+    ],
+    frames=surface_frames,
+    layout=go.Layout(
+        title="Cesta gradientního sestupu po povrchu chyby MSE",
+        height=580,
+        template="plotly_white",
+        margin=dict(t=90, b=10, l=10, r=10),
+        xaxis=dict(title="m (sklon, standardizované X)", range=[grid_m[0], grid_m[-1]]),
+        yaxis=dict(title="b (posun)", range=[grid_b[0], grid_b[-1]]),
+        showlegend=False,
+        updatemenus=play_pause_buttons(duration=250),
+        sliders=frame_slider([f.name for f in surface_frames]),
+    ),
+)
+
+st.plotly_chart(surface_fig, use_container_width=True)
+
+st.caption(
+    "Vrstevnice spojují body se stejnou chybou MSE, ⭐ je optimum. "
+    "Oranžová cesta ukazuje, jak se (m, b) po jednotlivých krocích blíží k "
+    "minimu — na začátku jsou kroky velké (gradient je strmý), u dna se "
+    "zkracují. Při příliš velkém learning rate (postranní panel) cesta "
+    "z jedné strany údolí na druhou přeskakuje."
+)
+
+st.divider()
+
 tab_steps, tab_pros, tab_params, tab_pitfalls = st.tabs(
     ["📝 Krok za krokem", "⚖️ Výhody a nevýhody", "🎯 Volba parametrů", "⚠️ Časté chyby"]
 )
