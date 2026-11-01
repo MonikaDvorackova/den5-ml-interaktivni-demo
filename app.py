@@ -78,6 +78,7 @@ m7 = st.Page("pages/m7_🔁_Verze_a_Rollback.py", title="Verze a rollback")
 m8 = st.Page("pages/m8_❓_Shrnuti_a_Kviz.py", title="Shrnutí a kvíz")
 
 p1 = st.Page("pages/p1_🔐_Ochrana_Dat_a_Kodu.py", title="Ochrana dat a kódu")
+p2 = st.Page("pages/p2_⚖️_Skalovani_Dat.py", title="Škálování dat")
 
 pg = st.navigation(
     {
@@ -91,6 +92,7 @@ pg = st.navigation(
         "Den 5: Detekce anomálií": [lof, iforest],
         "Doplňkové: MLOps": [m0, m1, m2, m3, m4, m5, m6, m7, m8],
         "Doplňkové: Ochrana dat": [p1],
+        "Doplňkové: Předzpracování": [p2],
     },
     expanded=True,
 )
