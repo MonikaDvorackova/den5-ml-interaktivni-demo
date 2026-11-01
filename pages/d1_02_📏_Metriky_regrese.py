@@ -173,6 +173,55 @@ r2 = r2_score(y_true, y_pred)""",
         language="python",
     )
 
+with st.expander("📎 Další informace: normalizace a standardizace"):
+    st.markdown(
+        """
+Obě techniky převádějí hodnoty na srovnatelnou škálu. Liší se tím, jak to dělají:
+"""
+    )
+    st.markdown("**Normalizace (min-max scaling)** — hodnoty se převedou do intervalu [0, 1]:")
+    st.latex(r"x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}")
+    st.markdown("**Standardizace (z-score)** — střední hodnota 0 a směrodatná odchylka 1:")
+    st.latex(r"z = \frac{x - \mu}{\sigma}")
+    st.markdown(
+        """
+| | Normalizace | Standardizace |
+|---|---|---|
+| **Výsledný rozsah** | pevně [0, 1] | není omezený |
+| **Citlivost na odlehlé hodnoty** | vysoká (jeden extrém „stlačí" ostatní body) | nižší, ale ovlivní μ a σ |
+| **Kdy ji zvolit** | potřebuješ omezený rozsah (např. neuronové sítě, obrazy) | data jsou přibližně normální, nebo model předpokládá centrovaná data (regularizace, PCA, gradientní sestup) |
+
+**Souvislost s metrikami regrese:**
+- **MAE, MSE a RMSE se mění se škálou y.** Pokud cílovou proměnnou
+  standardizuješ, vyjde MAE a RMSE v jednotkách σ (tj. původní hodnota / σ),
+  MSE pak původní hodnota / σ². Před porovnáním s jinými modely proto
+  vždy přepočítej predikce zpět do původních jednotek.
+- **R² se lineární transformací y nemění**, protože je bezrozměrné — proto
+  se hodí k porovnání napříč různými škálami.
+- **Škálování vstupních proměnných (X)** metriky přímo nemění, ale zásadně
+  ovlivňuje regularizované modely a gradientní sestup.
+
+**Nejčastější chyba — únik dat (data leakage):** škálovač (`min`, `max`, `μ`, `σ`)
+se učí **jen na trénovacích datech** a stejné parametry se pak použijí na
+testovací data. Pokud ho natrénuješ na všech datech, test „vidí" informaci,
+kterou by v praxi neměl.
+"""
+    )
+    st.code(
+        """from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+# standardizace: fit pouze na trénovacích datech
+scaler = StandardScaler().fit(X_train)
+X_train_s = scaler.transform(X_train)
+X_test_s = scaler.transform(X_test)
+
+# normalizace do [0, 1]
+minmax = MinMaxScaler().fit(X_train)
+X_train_n = minmax.transform(X_train)
+X_test_n = minmax.transform(X_test)""",
+        language="python",
+    )
+
 st.info(
     "💡 **Cvičení:** Nastav sílu odlehlých hodnot na maximum a sleduj, o "
     "kolik procent se zvýší MSE/RMSE oproti MAE ve srovnání s daty bez "
